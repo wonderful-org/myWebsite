@@ -12,4 +12,13 @@
         <servlet-name>testServlet</servlet-name>
         <url-pattern>/test</url-pattern>
     </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>resumeServlet</servlet-name>
+        <servlet-class>com.aviator.mywebsite.controller.ResumeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>resumeServlet</servlet-name>
+        <url-pattern>/resume</url-pattern>
+    </servlet-mapping>
 </web-app>
