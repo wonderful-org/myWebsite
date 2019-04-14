@@ -3,7 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
-    
+
+    <!-- servlet start -->
     <servlet>
         <servlet-name>testServlet</servlet-name>
         <servlet-class>com.aviator.mywebsite.controller.TestServlet</servlet-class>
@@ -12,4 +13,16 @@
         <servlet-name>testServlet</servlet-name>
         <url-pattern>/test</url-pattern>
     </servlet-mapping>
+    <!-- servlet end -->
+
+    <!-- filter start -->
+    <filter>
+        <filter-name>testFilter</filter-name>
+        <filter-class>com.aviator.mywebsite.filter.TestFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>testFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!-- filter end -->
 </web-app>
