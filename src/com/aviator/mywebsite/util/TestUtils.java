@@ -1,7 +1,11 @@
 package com.aviator.mywebsite.util;
 
+import com.aviator.mywebsite.db.datasource.unpooled.UnPooledDataSource;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
 
 /**
  * @ClassName TestUtils
@@ -13,7 +17,18 @@ public class TestUtils {
 
     private static final Logger log = LoggerFactory.getLogger(TestUtils.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IllegalAccessException {
         log.info(System.currentTimeMillis() + "");
+        UnPooledDataSource dataSource = new UnPooledDataSource();
+        FieldUtils.writeDeclaredField(dataSource, "driver", "testDriver", true);
+        FieldUtils.writeDeclaredField(dataSource, "url", "testUrl", true);
+        FieldUtils.writeDeclaredField(dataSource, "username", "testUsername", true);
+        FieldUtils.writeDeclaredField(dataSource, "password", null, true);
+        FieldUtils.writeDeclaredField(dataSource, "autoCommit", false, true);
+        FieldUtils.writeDeclaredField(dataSource, "defaultTransactionIsolationLevel", 1, true);
+        for(Field field : FieldUtils.getAllFields(UnPooledDataSource.class)){
+            field.setAccessible(true);
+            log.info(field.getName() + ":" + field.get(dataSource));
+        }
     }
 }
