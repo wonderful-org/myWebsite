@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>testjsp</title>
+    <title>test</title>
 </head>
 <body>
     返回码：${code}<br>
