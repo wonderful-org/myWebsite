@@ -38,18 +38,23 @@ public class PooledConnection implements InvocationHandler {
 
     private final int hashcode;
 
+    private ConnectionState connectionState;
+
     public PooledConnection(PooledDataSource dataSource, Connection realConnection) {
         this.hashcode = realConnection.hashCode();
         this.dataSource = dataSource;
         this.realConnection = realConnection;
         this.valid = true;
         this.proxyConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class<?>[]{Connection.class}, this);
+        this.connectionState = recordConnection(this.realConnection);
+        recordConnection(this.realConnection);
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws SQLException {
         String methodName = method.getName();
         if ("close".hashCode() == methodName.hashCode() && "close".equals(methodName)) {
+            this.connectionState.resetConnection(this.realConnection);
             dataSource.pushConnection(this);
             return null;
         }
@@ -148,4 +153,17 @@ public class PooledConnection implements InvocationHandler {
             throw new SQLException("Error accessing PooledConnection. Connection is invalid.");
         }
     }
+
+    private ConnectionState recordConnection(Connection conn) {
+        try {
+            ConnectionState connectionState = new ConnectionState();
+            connectionState.setAutoCommit(conn.getAutoCommit());
+            connectionState.setTransactionIsolation(conn.getTransactionIsolation());
+            return connectionState;
+        } catch (Exception e) {
+            log.error("record connection state error", e);
+            throw new DataSourceException("record connection state error", e);
+        }
+    }
+
 }
