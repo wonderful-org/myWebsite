@@ -27,6 +27,8 @@ public class User extends BaseEntity {
 
     private Date updateTime;
 
+    private UserInfo userInfo;
+
     public long getId() {
         return id;
     }
@@ -73,5 +75,26 @@ public class User extends BaseEntity {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", salt='" + salt + '\'' +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                ", userInfo=" + userInfo +
+                '}';
     }
 }

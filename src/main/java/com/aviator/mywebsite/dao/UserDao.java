@@ -14,8 +14,6 @@ import java.util.List;
  */
 public class UserDao extends BaseDao {
 
-    private static final String USER_TABLE_NAME = "mw_user";
-
     public User getUserByUsername(String username) {
         StringBuilder sql = new StringBuilder("select * from ");
         sql.append(USER_TABLE_NAME).append(" where ").append(" username = ? ");

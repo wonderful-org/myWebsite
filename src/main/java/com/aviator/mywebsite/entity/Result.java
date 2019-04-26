@@ -1,5 +1,8 @@
 package com.aviator.mywebsite.entity;
 
+import com.aviator.mywebsite.enums.ResultEnums;
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @ClassName Result
  * @Description TODO
@@ -45,5 +48,9 @@ public class Result extends BaseEntity {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    public boolean isSuccess() {
+        return StringUtils.isNotBlank(code) && code.equals(ResultEnums.SUCCESS.getCode());
     }
 }

@@ -114,7 +114,9 @@ public class SimpleExecutor extends AbstractExecutor {
                 Field[] fields = FieldUtils.getAllFields(resultType);
                 for (Field field : fields) {
                     String fieldName = field.getName();
-                    FieldUtils.writeDeclaredField(resultObject, fieldName, rowMap.get(fieldName), true);
+                    if (rowMap.containsKey(fieldName)) {
+                        FieldUtils.writeDeclaredField(resultObject, fieldName, rowMap.get(fieldName), true);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -135,7 +137,9 @@ public class SimpleExecutor extends AbstractExecutor {
                     Field[] fields = FieldUtils.getAllFields(resultType);
                     for (Field field : fields) {
                         String fieldName = field.getName();
-                        FieldUtils.writeDeclaredField(resultObject, fieldName, rowMap.get(fieldName), true);
+                        if (rowMap.containsKey(fieldName)) {
+                            FieldUtils.writeDeclaredField(resultObject, fieldName, rowMap.get(fieldName), true);
+                        }
                     }
                     result.add(resultObject);
                 }

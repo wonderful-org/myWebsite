@@ -8,5 +8,7 @@ public class RespConstants {
         String MSG = "msg";
 
         String DATA = "data";
+
+        String ERR_MSG = "errMsg";
     }
 }

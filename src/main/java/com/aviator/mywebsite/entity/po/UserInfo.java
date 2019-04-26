@@ -2,6 +2,8 @@ package com.aviator.mywebsite.entity.po;
 
 import com.aviator.mywebsite.entity.BaseEntity;
 
+import java.util.Date;
+
 /**
  * @Description 用户信息
  * @ClassName UserInfo
@@ -11,6 +13,8 @@ import com.aviator.mywebsite.entity.BaseEntity;
 public class UserInfo extends BaseEntity {
 
     private long id;
+
+    private long userId;
 
     /**
      * 昵称
@@ -37,12 +41,24 @@ public class UserInfo extends BaseEntity {
      */
     private String introduction;
 
+    private Date createTime;
+
+    private Date updateTime;
+
     public long getId() {
         return id;
     }
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public String getNickname() {
@@ -83,5 +99,36 @@ public class UserInfo extends BaseEntity {
 
     public void setIntroduction(String introduction) {
         this.introduction = introduction;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    @Override
+    public String toString() {
+        return "UserInfo{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", nickname='" + nickname + '\'' +
+                ", email='" + email + '\'' +
+                ", gender=" + gender +
+                ", profile='" + profile + '\'' +
+                ", introduction='" + introduction + '\'' +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                '}';
     }
 }
