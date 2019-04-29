@@ -27,7 +27,7 @@ public class ResultUtils {
     }
 
     public static void buildFail(ServletRequest request, ResultEnums enums) {
-        buildFail(request, enums);
+        buildFail(request, enums, null);
     }
 
     public static void buildFail(ServletRequest request, ResultEnums enums, Object data) {
@@ -41,6 +41,10 @@ public class ResultUtils {
 
     public static Result buildResult(ResultEnums enums) {
         return buildResult(enums, null);
+    }
+
+    public static Result buildSuccessResult(Object data) {
+        return buildResult(ResultEnums.SUCCESS, data);
     }
 
     public static Result buildResult(ResultEnums enums, Object data) {

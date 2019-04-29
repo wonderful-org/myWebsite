@@ -16,6 +16,8 @@ public class UserInfo extends BaseEntity {
 
     private long userId;
 
+    private String username;
+
     /**
      * 昵称
      */
@@ -59,6 +61,14 @@ public class UserInfo extends BaseEntity {
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getNickname() {

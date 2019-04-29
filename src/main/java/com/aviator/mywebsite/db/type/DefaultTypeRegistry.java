@@ -16,7 +16,13 @@ public class DefaultTypeRegistry {
 
     private final Map<Type, JDBCType> typeMapping = new HashMap<>();
 
-    public DefaultTypeRegistry() {
+    private static DefaultTypeRegistry instance = new DefaultTypeRegistry();
+
+    public static DefaultTypeRegistry getInstance(){
+        return instance;
+    }
+
+    private DefaultTypeRegistry() {
         register(String.class, JDBCType.VARCHAR);
 
         register(Boolean.class, JDBCType.BOOLEAN);
@@ -43,7 +49,7 @@ public class DefaultTypeRegistry {
         register(Date.class, JDBCType.TIMESTAMP);
     }
 
-    public void register(Type javaType, JDBCType jdbcType) {
+    public synchronized void register(Type javaType, JDBCType jdbcType) {
         typeMapping.put(javaType, jdbcType);
     }
 

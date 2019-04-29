@@ -4,9 +4,9 @@ import com.aviator.mywebsite.annotation.GetMapping;
 import com.aviator.mywebsite.annotation.PostMapping;
 import com.aviator.mywebsite.entity.Result;
 import com.aviator.mywebsite.entity.dto.req.UserReq;
+import com.aviator.mywebsite.entity.dto.resp.UserResp;
 import com.aviator.mywebsite.util.ResultUtils;
 import com.aviator.mywebsite.util.SecurityUtils;
-import com.aviator.mywebsite.util.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +30,10 @@ public class UserServlet extends BaseServlet {
     }
 
     @PostMapping("/login")
-    public String login(HttpServletRequest req) {
-        UserReq userReq = ServletUtils.getParams(req, UserReq.class);
+    public String login(HttpServletRequest req, UserReq userReq) {
         Result result = userService.login(userReq);
         if (result.isSuccess()) {
-            req.getSession().setAttribute(SecurityUtils.USER_SESSION_ATTRIBUTE, result.getData());
+            SecurityUtils.setCurrentUser(req, (UserResp) result.getData());
             return "index";
         }
         ResultUtils.buildFail(req, result);
@@ -47,11 +46,9 @@ public class UserServlet extends BaseServlet {
     }
 
     @PostMapping("/register")
-    public String register(HttpServletRequest req) {
-        UserReq userReq = ServletUtils.getParams(req, UserReq.class);
+    public String register(HttpServletRequest req, UserReq userReq) {
         Result result = userService.register(userReq);
         if (result.isSuccess()) {
-            req.getSession().setAttribute(SecurityUtils.USER_SESSION_ATTRIBUTE, result.getData());
             return "f:login";
         }
         ResultUtils.buildFail(req, result);

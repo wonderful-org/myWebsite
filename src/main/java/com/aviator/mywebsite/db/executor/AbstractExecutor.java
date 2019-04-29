@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public abstract class AbstractExecutor implements Executor {
 
     protected TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
 
-    protected DefaultTypeRegistry typeRegistry = new DefaultTypeRegistry();
+    protected DefaultTypeRegistry typeRegistry = DefaultTypeRegistry.getInstance();
 
     public AbstractExecutor(DataSource dataSource, DBConfig dbConfig) {
         this.dataSource = dataSource;
@@ -62,22 +63,28 @@ public abstract class AbstractExecutor implements Executor {
                 Object param = params.get(i - 1);
                 Object element = param;
                 JDBCType jdbcType = null;
+                Type javaType = null;
                 if (param != null && param instanceof List) {
                     List paramList = (List) param;
-                    if (CollectionUtils.isNotEmpty(paramList) && paramList.size() > 1 && paramList.get(1) instanceof JDBCType) {
+                    if (CollectionUtils.isNotEmpty(paramList)) {
                         element = paramList.get(0);
-                        jdbcType = (JDBCType) paramList.get(1);
+                        if (paramList.size() > 1 && paramList.get(1) instanceof JDBCType) {
+                            jdbcType = (JDBCType) paramList.get(1);
+                        }
+                        if (paramList.size() > 2 && paramList.get(2) instanceof Type) {
+                            javaType = (Type) paramList.get(2);
+                        }
                     }
                 }
                 if (jdbcType == null) {
-                    jdbcType = typeRegistry.getJdbcTypeByJava(element.getClass());
+                    jdbcType = typeRegistry.getJdbcTypeByJava(element == null ? null : element.getClass());
                 }
-                TypeHandler typeHandler = typeHandlerRegistry.getTypeHandler(param.getClass());
+                TypeHandler typeHandler = typeHandlerRegistry.getTypeHandler(javaType != null ? javaType : element == null ? null : element.getClass());
                 if (typeHandler == null) {
-                    log.error("can't find typeHandler, param:{}, paramType:{}", element, element.getClass());
+                    log.error("can't find typeHandler, param:{}, paramType:{}", element, javaType != null ? javaType : element == null ? null : element.getClass());
                     throw new SQLException("can't find typeHandler");
                 }
-                typeHandler.setParameter(ps, i, param, jdbcType);
+                typeHandler.setParameter(ps, i, element, jdbcType);
             }
         }
     }

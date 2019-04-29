@@ -1,0 +1,14 @@
+body{
+    background-color: #eceff1;
+}
+
+.img-responsive {
+    display: block;
+    height: 140px;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.err-msg{
+    color: red;
+}

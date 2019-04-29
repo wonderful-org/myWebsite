@@ -3,10 +3,12 @@ package com.aviator.mywebsite.filter;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Enumeration;
 
 /**
  * @Description TODO
@@ -20,21 +22,37 @@ public class CharacterEncodingFilter extends OncePerRequestFilter {
     private boolean forceRequestEncoding;
     private boolean forceResponseEncoding;
 
-    public CharacterEncodingFilter() {
-    }
+    private static final String ENCODING = "encoding";
+    private static final String FORCE_ENCODING = "forceEncoding";
+    private static final String FORCE_REQUEST_ENCODING = "forceRequestEncoding";
+    private static final String FORCE_RESPONSE_ENCODING = "forceResponseEncoding";
 
-    public CharacterEncodingFilter(String encoding) {
-        this(encoding, false);
-    }
 
-    public CharacterEncodingFilter(String encoding, boolean forceEncoding) {
-        this(encoding, forceEncoding, forceEncoding);
-    }
-
-    public CharacterEncodingFilter(String encoding, boolean forceRequestEncoding, boolean forceResponseEncoding) {
-        this.encoding = encoding;
-        this.forceRequestEncoding = forceRequestEncoding;
-        this.forceResponseEncoding = forceResponseEncoding;
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        Enumeration<String> names = filterConfig.getInitParameterNames();
+        if (names != null) {
+            while (names.hasMoreElements()) {
+                String name = names.nextElement();
+                String value = filterConfig.getInitParameter(name);
+                if (StringUtils.isBlank(value)) {
+                    continue;
+                }
+                if (name.equalsIgnoreCase(ENCODING)) {
+                    this.encoding = value;
+                }
+                if (name.equalsIgnoreCase(FORCE_ENCODING)) {
+                    this.forceRequestEncoding = Boolean.parseBoolean(value);
+                    this.forceResponseEncoding = Boolean.parseBoolean(value);
+                }
+                if (name.equalsIgnoreCase(FORCE_REQUEST_ENCODING)) {
+                    this.forceRequestEncoding = Boolean.parseBoolean(value);
+                }
+                if (name.equalsIgnoreCase(FORCE_RESPONSE_ENCODING)) {
+                    this.forceResponseEncoding = Boolean.parseBoolean(value);
+                }
+            }
+        }
     }
 
     @Override

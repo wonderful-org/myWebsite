@@ -1,11 +1,11 @@
 package com.aviator.mywebsite.controller;
 
-import com.aviator.mywebsite.annotation.DeleteMapping;
-import com.aviator.mywebsite.annotation.GetMapping;
-import com.aviator.mywebsite.annotation.PostMapping;
-import com.aviator.mywebsite.annotation.PutMapping;
+import com.alibaba.fastjson.JSON;
+import com.aviator.mywebsite.annotation.*;
 import com.aviator.mywebsite.exception.ControllerException;
+import com.aviator.mywebsite.service.MessageService;
 import com.aviator.mywebsite.service.UserService;
+import com.aviator.mywebsite.util.ServletUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,7 +16,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * description: servlet基类，重写了doGet/doPost方法，配合GetMapping/PostMapping等注解可以使servlet根据不同请求uri分发到不同方法来处理
@@ -42,6 +45,8 @@ public abstract class BaseServlet extends HttpServlet {
 
     protected UserService userService = new UserService();
 
+    protected MessageService messageService = new MessageService();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String uri = req.getRequestURI();
@@ -51,32 +56,65 @@ public abstract class BaseServlet extends HttpServlet {
         Method method = findMethod(mappingUri, req);
         if (method == null) {
             log.error("can not find mapping uri: {}", uri);
-            throw new ControllerException("can not find mapping uri: " + uri);
+            req.getRequestDispatcher(VIEW_PATH + "404" + VIEW_SUFFIX).forward(req, resp);
+            return;
         }
-        String result;
+        Object resultObj;
         try {
+            // 方法参数列表类型数组
             Class[] parameterTypes = method.getParameterTypes();
+            // 方法参数列表注解
+            Annotation[][] annotationss = method.getParameterAnnotations();
+            // 最后method.invoke传入的实参数组
+            Object[] args = new Object[parameterTypes.length];
+            for (int i = 0; i < parameterTypes.length; i++) {
+                Class parameterType = parameterTypes[i];
+                Object ag;
+                if (parameterType == HttpServletRequest.class) {
+                    ag = req;
+                } else if (parameterType == HttpServletResponse.class) {
+                    ag = resp;
+                } else {
+                    Annotation[] annotations = annotationss[i];
+                    // 该参数包含RequestBody注解，则把传来的数据当作json，从request流中拿json反序列化为参数
+                    if (containsRequestBody(annotations)) {
+                        ag = ServletUtils.getByStream(req, parameterType);
+                    } else {
+                        // 该参数包含RequestParam注解且注解value有值，则根据value从request的parameterMap中取值
+                        // 不包含RequestParam注解或注解value没有值，则直接将parameterMap反序列化为参数
+                        RequestParam rp = getRequestParam(annotations);
+                        if (parameterType == String.class && rp != null && StringUtils.isNotBlank(rp.value())) {
+                            Map<String, Object> paramMap = ServletUtils.getParams(req);
+                            ag = paramMap.get(rp.value());
+                        } else {
+                            ag = ServletUtils.getParams(req, parameterType);
+                        }
+                    }
+                }
+                args[i] = ag;
+            }
             if (ArrayUtils.isEmpty(parameterTypes)) {
-                result = (String) method.invoke(this);
-            } else if (parameterTypes.length == 1) {
-                Class type = parameterTypes[0];
-                if (type == HttpServletRequest.class) {
-                    result = (String) method.invoke(this, req);
-                } else {
-                    result = (String) method.invoke(this, resp);
-                }
+                resultObj = method.invoke(this);
             } else {
-                Class type1 = parameterTypes[0];
-                if (type1 == HttpServletRequest.class) {
-                    result = (String) method.invoke(this, req, resp);
-                } else {
-                    result = (String) method.invoke(this, resp, req);
-                }
+                resultObj = method.invoke(this, args);
             }
         } catch (Exception e) {
             log.error("servlet method invoke error ", e);
             throw new ControllerException("servlet method invoke error", e);
         }
+        if (resultObj == null) {
+            return;
+        }
+        // 如果方法有responseBody注解，判断为ajax请求，返回json
+        if (!(resultObj instanceof String) || method.isAnnotationPresent(ResponseBody.class)) {
+            resp.setContentType("text/json;charset=UTF-8");
+            try (PrintWriter writer = resp.getWriter()) {
+                writer.print(JSON.toJSONString(resultObj));
+                writer.flush();
+            }
+            return;
+        }
+        String result = (String) resultObj;
         if (StringUtils.isBlank(result)) {
             return;
         }
@@ -106,7 +144,7 @@ public abstract class BaseServlet extends HttpServlet {
 
     private String getMappingUri(String uri) {
         uri = removeFirstStr(uri, "/");
-        String mappingUri = uri.indexOf("/") < 0 ? uri : StringUtils.substringAfter(uri, "/").replace(" ", "");
+        String mappingUri = uri.indexOf("/") < 0 ? "" : StringUtils.substringAfter(uri, "/").replace(" ", "");
         mappingUri = removeFirstStr(mappingUri, "/");
         return mappingUri;
     }
@@ -155,6 +193,28 @@ public abstract class BaseServlet extends HttpServlet {
             str = StringUtils.substringAfter(str, separator);
         }
         return str;
+    }
+
+    private boolean containsRequestBody(Annotation[] annotations) {
+        if (ArrayUtils.isNotEmpty(annotations)) {
+            for (Annotation annotation : annotations) {
+                if (annotation instanceof RequestBody) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private RequestParam getRequestParam(Annotation[] annotations) {
+        if (ArrayUtils.isNotEmpty(annotations)) {
+            for (Annotation annotation : annotations) {
+                if (annotation instanceof RequestParam) {
+                    return (RequestParam) annotation;
+                }
+            }
+        }
+        return null;
     }
 
 }

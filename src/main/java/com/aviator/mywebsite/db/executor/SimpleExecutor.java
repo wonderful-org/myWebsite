@@ -109,15 +109,8 @@ public class SimpleExecutor extends AbstractExecutor {
                 if (resultList.size() > 1) {
                     log.warn("jdbc executeQueryForObject expect 1 but get {}", resultList.size());
                 }
-                resultObject = resultType.newInstance();
                 Map<String, Object> rowMap = resultList.get(0);
-                Field[] fields = FieldUtils.getAllFields(resultType);
-                for (Field field : fields) {
-                    String fieldName = field.getName();
-                    if (rowMap.containsKey(fieldName)) {
-                        FieldUtils.writeDeclaredField(resultObject, fieldName, rowMap.get(fieldName), true);
-                    }
-                }
+                resultObject = mapToType(rowMap, resultType);
             }
         } catch (Exception e) {
             log.error("jdbc executeQueryForObject error, sql:{}, params:{}, resultType:{}", sql, params, resultType, e);
@@ -133,15 +126,7 @@ public class SimpleExecutor extends AbstractExecutor {
         try {
             if (CollectionUtils.isNotEmpty(resultList)) {
                 for (Map<String, Object> rowMap : resultList) {
-                    T resultObject = resultType.newInstance();
-                    Field[] fields = FieldUtils.getAllFields(resultType);
-                    for (Field field : fields) {
-                        String fieldName = field.getName();
-                        if (rowMap.containsKey(fieldName)) {
-                            FieldUtils.writeDeclaredField(resultObject, fieldName, rowMap.get(fieldName), true);
-                        }
-                    }
-                    result.add(resultObject);
+                    result.add(mapToType(rowMap, resultType));
                 }
             }
         } catch (Exception e) {
@@ -159,6 +144,50 @@ public class SimpleExecutor extends AbstractExecutor {
             log.error("jdbc executeQuery error, sql:{}", getSql(creator), e);
             throw new SQLException("jdbc executeCallback error", e);
         }
+    }
+
+    public boolean isBasicType(Class className, boolean incString) {
+        if (incString && className.equals(String.class)) {
+            return true;
+        }
+        return className.equals(Integer.class) ||
+                className.equals(int.class) ||
+                className.equals(Byte.class) ||
+                className.equals(byte.class) ||
+                className.equals(Long.class) ||
+                className.equals(long.class) ||
+                className.equals(Double.class) ||
+                className.equals(double.class) ||
+                className.equals(Float.class) ||
+                className.equals(float.class) ||
+                className.equals(Character.class) ||
+                className.equals(char.class) ||
+                className.equals(Short.class) ||
+                className.equals(short.class) ||
+                className.equals(Boolean.class) ||
+                className.equals(boolean.class);
+    }
+
+    private <T> T mapToType(Map<String, Object> rowMap, Class<T> resultType) throws SQLException, IllegalAccessException, InstantiationException {
+        T resultObject;
+        if (isBasicType(resultType, true)) {
+            if (rowMap.size() > 1) {
+                log.error("jdbc executeQueryForObject can not convert result to {}", resultType.getName());
+                throw new SQLException("jdbc executeQueryForObject can not convert result to" + resultType.getName());
+            }
+            String key = rowMap.keySet().toArray(new String[0])[0];
+            resultObject = (T) rowMap.get(key);
+        } else {
+            resultObject = resultType.newInstance();
+            Field[] fields = FieldUtils.getAllFields(resultType);
+            for (Field field : fields) {
+                String fieldName = field.getName();
+                if (rowMap.containsKey(fieldName)) {
+                    FieldUtils.writeDeclaredField(resultObject, fieldName, rowMap.get(fieldName), true);
+                }
+            }
+        }
+        return resultObject;
     }
 
 }

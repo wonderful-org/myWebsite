@@ -1,5 +1,6 @@
 package com.aviator.mywebsite.service;
 
+import com.aviator.mywebsite.dao.MessageDao;
 import com.aviator.mywebsite.dao.UserDao;
 import com.aviator.mywebsite.dao.UserInfoDao;
 import com.aviator.mywebsite.entity.Result;
@@ -22,6 +23,8 @@ public abstract class BaseService {
     protected UserDao userDao = new UserDao();
 
     protected UserInfoDao userInfoDao = new UserInfoDao();
+
+    protected MessageDao messageDao = new MessageDao();
 
     protected Result checkParams(Object... params) {
         if (ArrayUtils.isEmpty(params)) {

@@ -17,9 +17,4 @@ public class IndexServlet extends BaseServlet {
     public String index() {
         return "index";
     }
-
-    @GetMapping("/index")
-    public String toIndex() {
-        return index();
-    }
 }

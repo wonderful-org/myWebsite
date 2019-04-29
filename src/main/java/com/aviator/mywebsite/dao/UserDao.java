@@ -20,6 +20,12 @@ public class UserDao extends BaseDao {
         return JdbcUtils.executeQueryForObject(sql.toString(), User.class, username);
     }
 
+    public User getUserById(long id){
+        StringBuilder sql = new StringBuilder("select * from ");
+        sql.append(USER_TABLE_NAME).append(" where ").append(" id = ? ");
+        return JdbcUtils.executeQueryForObject(sql.toString(), User.class, id);
+    }
+
     public long insertUser(User user) {
         StringBuilder sql = new StringBuilder("insert into ");
         sql.append(USER_TABLE_NAME).append(" (username, password, salt, createTime, updateTime) ").append(" values ").append(" (?,?,?,?,?) ");
@@ -42,5 +48,10 @@ public class UserDao extends BaseDao {
         StringBuilder sql = new StringBuilder("select * from ");
         sql.append(USER_TABLE_NAME);
         return JdbcUtils.executeQueryForList(sql.toString(), User.class);
+    }
+
+    @Override
+    protected String getTableName() {
+        return USER_TABLE_NAME;
     }
 }
