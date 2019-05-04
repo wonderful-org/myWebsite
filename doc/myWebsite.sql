@@ -52,14 +52,14 @@ CREATE TABLE `mw_note` (
   `authorId` bigint(20) NOT NULL,
   `folderId` bigint(20) DEFAULT NULL,
   `title` varchar(200) NOT NULL,
+  `source` varchar(255) DEFAULT NULL COMMENT '来源',
   `content` text NOT NULL,
-  `contentHtml` text,
   `open` tinyint(4) NOT NULL COMMENT '是否公开',
+  `imgUrlsStr` text,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `authorId` (`authorId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='笔记/文章表';
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COMMENT='笔记/文章表';
 
 /*Table structure for table `mw_user` */
 

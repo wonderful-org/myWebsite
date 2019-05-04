@@ -1,6 +1,7 @@
 package com.aviator.mywebsite.db.executor;
 
 import com.aviator.mywebsite.db.DBConfig;
+import com.aviator.mywebsite.util.CustomUtils;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -146,31 +147,9 @@ public class SimpleExecutor extends AbstractExecutor {
         }
     }
 
-    public boolean isBasicType(Class className, boolean incString) {
-        if (incString && className.equals(String.class)) {
-            return true;
-        }
-        return className.equals(Integer.class) ||
-                className.equals(int.class) ||
-                className.equals(Byte.class) ||
-                className.equals(byte.class) ||
-                className.equals(Long.class) ||
-                className.equals(long.class) ||
-                className.equals(Double.class) ||
-                className.equals(double.class) ||
-                className.equals(Float.class) ||
-                className.equals(float.class) ||
-                className.equals(Character.class) ||
-                className.equals(char.class) ||
-                className.equals(Short.class) ||
-                className.equals(short.class) ||
-                className.equals(Boolean.class) ||
-                className.equals(boolean.class);
-    }
-
     private <T> T mapToType(Map<String, Object> rowMap, Class<T> resultType) throws SQLException, IllegalAccessException, InstantiationException {
         T resultObject;
-        if (isBasicType(resultType, true)) {
+        if (CustomUtils.isBasicType(resultType, true)) {
             if (rowMap.size() > 1) {
                 log.error("jdbc executeQueryForObject can not convert result to {}", resultType.getName());
                 throw new SQLException("jdbc executeQueryForObject can not convert result to" + resultType.getName());

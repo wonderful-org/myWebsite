@@ -2,15 +2,23 @@ package com.aviator.mywebsite.dao;
 
 import com.aviator.mywebsite.db.JdbcUtils;
 import com.aviator.mywebsite.db.type.DefaultTypeRegistry;
+import com.aviator.mywebsite.entity.cond.BaseCond;
+import com.aviator.mywebsite.entity.cond.NoteCond;
+import com.aviator.mywebsite.entity.po.Page;
 import com.aviator.mywebsite.entity.po.UserInfo;
 import com.aviator.mywebsite.exception.DaoException;
 import com.google.common.collect.Lists;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,10 +35,14 @@ public abstract class BaseDao {
     protected static final String NOTE_TABLE_NAME = "mw_note";
 
     public <T> long insert(T obj) {
+        return insert(obj, true);
+    }
+
+    public <T> long insert(T obj, boolean skipId) {
         Class objType = obj.getClass();
         StringBuilder sql = new StringBuilder("insert into ");
-        sql.append(getTableName()).append(getObjectFieldNamesSql(objType)).append(" values ").append(getObjectFieldNamesPreparedSql(objType));
-        return JdbcUtils.executeInsert(sql.toString(), objectToParamLists(obj, getObjectFieldNames(objType)), long.class);
+        sql.append(getTableName()).append(getObjectFieldNamesSql(objType, skipId)).append(" values ").append(getObjectFieldNamesPreparedSql(objType, skipId));
+        return JdbcUtils.executeInsert(sql.toString(), objectToParamLists(obj, getObjectFieldNames(objType, skipId)), long.class);
     }
 
     public <T> int update(T obj) {
@@ -58,10 +70,59 @@ public abstract class BaseDao {
         return JdbcUtils.executeUpdate(sql, paramLists);
     }
 
+    public <T> Page findPage(BaseCond cond, Class<T> resultType) {
+        long count = getCount();
+        if (count < 1) {
+            return new Page<>();
+        }
+        int pageNum = cond.getPageNum();
+        int pageSize = cond.getPageSize();
+        if (pageNum < 1) {
+            pageNum = Page.DEFAULT_PAGE_NUM;
+        }
+        if (pageSize < 1) {
+            pageSize = Page.DEFAULT_PAGE_SIZE;
+        }
+        int firstResult = (pageNum - 1) * pageSize;
+        if (firstResult >= count) {
+            return new Page<>();
+        }
+        String orderBy = cond.getOrderBy();
+        boolean isAsc = cond.isAsc();
+        StringBuilder sql = new StringBuilder("select * from ");
+        sql.append(getTableName());
+        List params = Lists.newArrayList();
+        String whereSql = getWhereSql(cond, params);
+        if (StringUtils.isNotBlank(whereSql)) {
+            sql.append(whereSql);
+        }
+        if (StringUtils.isNotBlank(orderBy)) {
+            sql.append(" order by ").append(orderBy).append(isAsc ? " asc " : " desc ");
+        }
+        sql.append(" limit ").append(firstResult).append(",").append(pageSize);
+        List<T> result = JdbcUtils.executeQueryForList(sql.toString(), params, resultType);
+        if (StringUtils.isBlank(orderBy)) {
+            return new Page(pageNum, pageSize, result, count);
+        }
+        return new Page(pageNum, pageSize, result, count, orderBy, isAsc);
+    }
+
     public long getCount() {
+        return getCount(null);
+    }
+
+    public long getCount(BaseCond cond) {
         StringBuilder sql = new StringBuilder("select count(*) from ");
         sql.append(getTableName());
-        return JdbcUtils.executeQueryForObject(sql.toString(), long.class);
+        List list = Lists.newArrayList();
+        String whereSql = cond != null ? getWhereSql(cond, list) : "";
+        if (StringUtils.isNotBlank(whereSql)) {
+            sql.append(whereSql);
+        }
+        if (CollectionUtils.isEmpty(list)) {
+            return JdbcUtils.executeQueryForObject(sql.toString(), long.class);
+        }
+        return JdbcUtils.executeQueryForObject(sql.toString(), list, long.class);
     }
 
     protected abstract String getTableName();
@@ -84,12 +145,20 @@ public abstract class BaseDao {
     }
 
     protected static String getObjectFieldNamesSql(Class clazz) {
-        List<String> fieldNames = getObjectFieldNames(clazz);
+        return getObjectFieldNamesSql(clazz, true);
+    }
+
+    protected static String getObjectFieldNamesSql(Class clazz, boolean skipId) {
+        List<String> fieldNames = getObjectFieldNames(clazz, skipId);
         return " " + fieldNames.toString().replace("[", "(").replace("]", ")") + " ";
     }
 
     protected static String getObjectFieldNamesPreparedSql(Class clazz) {
-        List<String> fieldNames = getObjectFieldNames(clazz);
+        return getObjectFieldNamesPreparedSql(clazz, true);
+    }
+
+    protected static String getObjectFieldNamesPreparedSql(Class clazz, boolean skipId) {
+        List<String> fieldNames = getObjectFieldNames(clazz, skipId);
         StringBuilder sb = new StringBuilder("(?");
         for (int i = 1; i < fieldNames.size(); i++) {
             sb.append(",?");
@@ -132,9 +201,50 @@ public abstract class BaseDao {
         return lists;
     }
 
+    private static String getWhereSql(BaseCond cond) {
+        return getWhereSql(cond, null);
+    }
+
+    private static String getWhereSql(BaseCond cond, List params) {
+        Field[] fields = cond.getClass().getDeclaredFields();
+        StringBuilder sb = new StringBuilder();
+        if (ArrayUtils.isNotEmpty(fields)) {
+            sb.append(" where 1=1 ");
+            for (Field field : fields) {
+                try {
+                    String fieldName = field.getName();
+                    Object fieldValue = PropertyUtils.getProperty(cond, fieldName);
+                    if (field.getType() == List.class) {
+                        List list = (List) fieldValue;
+                        if (CollectionUtils.isNotEmpty(list) && list.size() > 1) {
+                            if (params == null) {
+                                throw new DaoException("baseDao getWhereSql params is null");
+                            }
+                            sb.append(" and ").append(fieldName + " >= ? and " + fieldName + " < ? ");
+                            params.add(list.get(0));
+                            params.add(list.get(1));
+                        }
+                        continue;
+                    }
+                    sb.append(" and ").append(fieldName + " = " + fieldValue);
+                } catch (Exception e) {
+                    log.error("getFindPageParams error", e);
+                    throw new DaoException("getFindPageParams error", e);
+                }
+            }
+        }
+        return sb.toString();
+    }
+
     public static void main(String[] args) {
         System.out.println(getObjectFieldNamesSql(UserInfo.class));
         System.out.println(getUpdateObjectFieldNamesSql(UserInfo.class));
         System.out.println(getObjectFieldNamesPreparedSql(UserInfo.class));
+        NoteCond cond = new NoteCond();
+        cond.setCreateTime(new ArrayList() {{
+            add(new Date());
+            add(new Date());
+        }});
+        System.out.println(getWhereSql(cond));
     }
 }

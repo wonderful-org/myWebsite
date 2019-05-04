@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.aviator.mywebsite.annotation.*;
 import com.aviator.mywebsite.exception.ControllerException;
 import com.aviator.mywebsite.service.MessageService;
+import com.aviator.mywebsite.service.NoteService;
+import com.aviator.mywebsite.service.UploadService;
 import com.aviator.mywebsite.service.UserService;
+import com.aviator.mywebsite.util.CustomUtils;
 import com.aviator.mywebsite.util.ServletUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +50,10 @@ public abstract class BaseServlet extends HttpServlet {
 
     protected MessageService messageService = new MessageService();
 
+    protected UploadService uploadService = new UploadService();
+
+    protected NoteService noteService = new NoteService();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String uri = req.getRequestURI();
@@ -69,7 +76,7 @@ public abstract class BaseServlet extends HttpServlet {
             Object[] args = new Object[parameterTypes.length];
             for (int i = 0; i < parameterTypes.length; i++) {
                 Class parameterType = parameterTypes[i];
-                Object ag;
+                Object ag = null;
                 if (parameterType == HttpServletRequest.class) {
                     ag = req;
                 } else if (parameterType == HttpServletResponse.class) {
@@ -83,9 +90,12 @@ public abstract class BaseServlet extends HttpServlet {
                         // 该参数包含RequestParam注解且注解value有值，则根据value从request的parameterMap中取值
                         // 不包含RequestParam注解或注解value没有值，则直接将parameterMap反序列化为参数
                         RequestParam rp = getRequestParam(annotations);
-                        if (parameterType == String.class && rp != null && StringUtils.isNotBlank(rp.value())) {
+                        if (CustomUtils.isBasicType(parameterType) || rp != null && StringUtils.isNotBlank(rp.value())) {
                             Map<String, Object> paramMap = ServletUtils.getParams(req);
-                            ag = paramMap.get(rp.value());
+                            Object value = paramMap.get(rp.value());
+                            if (value != null) {
+                                ag = JSON.parseObject(JSON.toJSONString(value), parameterType);
+                            }
                         } else {
                             ag = ServletUtils.getParams(req, parameterType);
                         }
@@ -99,7 +109,7 @@ public abstract class BaseServlet extends HttpServlet {
                 resultObj = method.invoke(this, args);
             }
         } catch (Exception e) {
-            log.error("servlet method invoke error ", e);
+            log.error("servlet method invoke error,uri:{} ", uri, e);
             throw new ControllerException("servlet method invoke error", e);
         }
         if (resultObj == null) {
@@ -215,6 +225,10 @@ public abstract class BaseServlet extends HttpServlet {
             }
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+        System.out.println();
     }
 
 }

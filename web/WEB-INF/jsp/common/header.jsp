@@ -7,11 +7,11 @@
                 <a class="p-2 text-dark" href="${ctx}/note/toNotes">博客</a>
                 <a class="p-2 text-dark" href="javascript:;">个人主页</a>
                 <a class="p-2 text-dark" href="${ctx}/message/toMessages">留言区</a>
-                <a class="p-2 text-dark" href="javascript:;">关于</a>
+                <a class="p-2 text-dark" href="${ctx}/about">关于</a>
             </nav>
             <c:choose>
                 <c:when test="${empty currentUser.username}">
-                    <a class="btn btn-outline-primary" href="${ctx}/user/toLogin">登录</a>
+                    <a class="btn btn-outline-primary" href="${ctx}/user/toLogin?curUrl=${curPath}?${pageContext.request.queryString}">登录</a>
                 </c:when>
                 <c:otherwise>
                     <div class="dropdown show">
@@ -20,7 +20,8 @@
                                 ${currentUser.username}
                         </a>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="${ctx}/user/logout">退出</a>
+                            <a class="dropdown-item" href="${ctx}/user/personCenter">个人中心</a>
+                            <a class="dropdown-item" href="${ctx}/user/logout?curUrl=${curPath}?${pageContext.request.queryString}">退出</a>
                         </div>
                     </div>
                 </c:otherwise>

@@ -20,14 +20,16 @@ public class Note extends BaseEntity {
 
     private String title;
 
-    private String content;
+    private String source;
 
-    private String contentHtml;
+    private String content;
 
     /**
      * 是否公开，0：公开，1：不公开
      */
     private int open;
+
+    private String imgUrlsStr;
 
     private Date createTime;
 
@@ -65,20 +67,20 @@ public class Note extends BaseEntity {
         this.title = title;
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
     public String getContent() {
         return content;
     }
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public String getContentHtml() {
-        return contentHtml;
-    }
-
-    public void setContentHtml(String contentHtml) {
-        this.contentHtml = contentHtml;
     }
 
     public Date getCreateTime() {
@@ -95,6 +97,14 @@ public class Note extends BaseEntity {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getImgUrlsStr() {
+        return imgUrlsStr;
+    }
+
+    public void setImgUrlsStr(String imgUrlsStr) {
+        this.imgUrlsStr = imgUrlsStr;
     }
 
     public int getOpen() {

@@ -32,6 +32,7 @@
                         <a href="${ctx}/user/toRegister">还没有账号？去注册吧~</a>
                     </label>
                 </div>
+                <input type="hidden" name="curUrl" value="${data}">
                 <p class="err-msg">${errMsg}</p>
                 <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="return verify()">登录</button>
                 <p class="mt-5 mb-3 text-muted text-center">&copy; 2018-2019</p>
@@ -40,6 +41,7 @@
         <div class="col-md-3 col-lg-3"></div>
     </div>
 </div>
+<%@ include file="common/footer.jsp" %>
 </body>
 <script src="${resPath}/js/jquery-3.4.0.min.js"></script>
 <script src="${resPath}/js/popper.min.js"></script>

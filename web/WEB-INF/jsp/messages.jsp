@@ -41,6 +41,7 @@
         <%--<small class="text-muted">Donec id elit non mi porta.</small>--%>
         <%--</a>--%>
     </div>
+    <c:set var="paginationUrl" value="${ctx}/message/messages"/>
     <%@ include file="common/pagination.jsp" %>
     <div style="margin-top: 20px">
         <form action="${ctx}/message/" method="post">
@@ -52,6 +53,7 @@
     </div>
     <p class="err-msg">${errMsg}</p>
 </div>
+<%@ include file="common/footer.jsp" %>
 </body>
 <script src="${resPath}/js/jquery-3.4.0.min.js"></script>
 <script src="${resPath}/js/popper.min.js"></script>

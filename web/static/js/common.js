@@ -313,18 +313,13 @@ function repCodeFunc(res, sucCallback, failCallback, config) {
                 var resData = res.data;
                 sucCallback(resData);
             }
-        } else if (REP_CODE.USER_NOT_LOGIN == code) {
-            if (config.loginJump) {
-                window.open(baseUrl + '/toLogin', '_self');
-            }
-        } else {
+        } else if (isFunction(failCallback)) {
             if (isFunction(failCallback)) {
                 failCallback(res);
-            } else {
-                if (config.errDialog) {
-                    var msg = res.msg;
-                    dialogModalError(msg, 1500);
-                }
+            }
+        } else if(REP_CODE.USER_NOT_LOGIN == code){
+            if (config.loginJump) {
+                window.open(baseUrl + '/toLogin', '_self');
             }
         }
     }

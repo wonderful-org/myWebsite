@@ -4,6 +4,9 @@ public enum ResultEnums {
 
     SUCCESS("00000", "请求成功"),
 
+    /**
+     * 参数错误
+     */
     ILLEGAL_ARGUMENT("10001", "参数错误"),
 
     NULL_ARGUMENT("10002", "参数为空"),
@@ -14,6 +17,9 @@ public enum ResultEnums {
 
     MESSAGE_CONTENT_FORMAT_ERROR("10201", "留言内容有误"),
 
+    /**
+     * 业务错误
+     */
     USER_EXIST("40001", "用户已存在"),
 
     USER_NOT_EXIST("40002", "用户不存在"),
@@ -24,7 +30,15 @@ public enum ResultEnums {
 
     USER_USERNAME_PASSWORD_ERROR("40005", "用户名或密码错误"),
 
-    MESSAGE_NOT_EXIST("40101", "留言不存在");
+    MESSAGE_NOT_EXIST("40101", "留言不存在"),
+
+    UPLOAD_LIMIT_FILE_MAX_SIZE("40211", "上传文件超出最大值"),
+
+    UPLOAD_LIMIT_MULT_FILE_MAX_SIZE("40212", "上传文件总量超出最大值"),
+
+    UPLOAD_ERROR("40213", "上传文件总量超出最大值"),
+
+    NOTE_NOT_EXIST("40301", "文章不存在");
 
     private String code;
 

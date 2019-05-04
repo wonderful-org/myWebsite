@@ -12,6 +12,7 @@ import com.aviator.mywebsite.util.SecurityUtils;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @Description TODO
@@ -51,5 +52,9 @@ public class MessageServlet extends BaseServlet {
             return "messages";
         }
         return "r:messages";
+    }
+
+    private List<String> archives(){
+        return null;
     }
 }

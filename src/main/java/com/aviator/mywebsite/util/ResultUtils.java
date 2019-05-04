@@ -39,12 +39,16 @@ public class ResultUtils {
         buildReq(request, result);
     }
 
-    public static Result buildResult(ResultEnums enums) {
-        return buildResult(enums, null);
-    }
-
     public static Result buildSuccessResult(Object data) {
         return buildResult(ResultEnums.SUCCESS, data);
+    }
+
+    public static Result buildSuccessResult() {
+        return buildResult(ResultEnums.SUCCESS, null);
+    }
+
+    public static Result buildResult(ResultEnums enums) {
+        return buildResult(enums, null);
     }
 
     public static Result buildResult(ResultEnums enums, Object data) {

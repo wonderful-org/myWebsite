@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Title</title>
+    <title>404</title>
 </head>
 <body>
     找不到页面啦~~~~~

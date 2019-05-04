@@ -37,6 +37,7 @@
         <div class="col-md-3 col-lg-3"></div>
     </div>
 </div>
+<%@ include file="common/footer.jsp" %>
 </body>
 <script src="${resPath}/js/jquery-3.4.0.min.js"></script>
 <script src="${resPath}/js/popper.min.js"></script>

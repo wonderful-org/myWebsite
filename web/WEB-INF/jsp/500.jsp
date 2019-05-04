@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Title</title>
+    <title>500</title>
 </head>
 <body>
     出错啦~~~~~~~

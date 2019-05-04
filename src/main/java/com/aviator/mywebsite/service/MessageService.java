@@ -92,7 +92,7 @@ public class MessageService extends BaseService {
             // 按创建时间降序
             cond.setOrderBy("createTime");
             cond.setAsc(false);
-            Page page = messageDao.findMessagePage(cond);
+            Page page = messageDao.findPage(cond, Message.class);
             List<Message> messages = page.getData();
             List<MessageResp> messageResps = Lists.newArrayList();
             if (CollectionUtils.isNotEmpty(messages)) {

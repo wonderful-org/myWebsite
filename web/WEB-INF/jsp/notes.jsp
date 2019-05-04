@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ include file="common/base.jsp" %>
 <!DOCTYPE html>
 <html>
@@ -7,120 +8,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="${resPath}/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="${resPath}/css/global.css"/>
-    <title>Title</title>
+    <link rel="stylesheet" href="${resPath}/css/notes.css"/>
+    <title>博客</title>
 </head>
 <body>
 <%@ include file="common/header.jsp" %>
+    <div class="container">
+        <div class="jumbotron p-3 p-md-5 text-white rounded bg-dark">
+            <div class="col-md-6 px-0">
+                <h1 class="display-4 font-italic">文章展示</h1>
+                <p class="lead my-3">最新文章都会在这里展示，点击下面的链接去写写看吧~.</p>
+                <p class="lead mb-0"><a href="${ctx}/note/toAdd" class="text-white font-weight-bold">去写文章&nbsp;&raquo;</a></p>
+            </div>
+        </div>
+    </div>
     <main role="main" class="container">
         <div class="row">
             <div class="col-md-8 blog-main">
                 <h3 class="pb-3 mb-4 font-italic border-bottom">
-                    From the Firehose
+                    ${data.dataType == 0 ? "最新文章" : data.betweenDate.concat("归档文章")}
                 </h3>
-
-                <div class="blog-post">
-                    <h2 class="blog-post-title">Sample blog post</h2>
-                    <p class="blog-post-meta">January 1, 2014 by <a href="#">Mark</a></p>
-
-                    <p>This blog post shows a few different types of content that's supported and styled with Bootstrap. Basic typography, images, and code are all supported.</p>
-                    <hr>
-                    <p>Cum sociis natoque penatibus et magnis <a href="#">dis parturient montes</a>, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.</p>
-                    <blockquote>
-                        <p>Curabitur blandit tempus porttitor. <strong>Nullam quis risus eget urna mollis</strong> ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                    </blockquote>
-                    <p>Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
-                    <h2>Heading</h2>
-                    <p>Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-                    <h3>Sub-heading</h3>
-                    <p>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
-                    <pre><code>Example code block</code></pre>
-                    <p>Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa.</p>
-                    <h3>Sub-heading</h3>
-                    <p>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-                    <ul>
-                        <li>Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</li>
-                        <li>Donec id elit non mi porta gravida at eget metus.</li>
-                        <li>Nulla vitae elit libero, a pharetra augue.</li>
-                    </ul>
-                    <p>Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue.</p>
-                    <ol>
-                        <li>Vestibulum id ligula porta felis euismod semper.</li>
-                        <li>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</li>
-                        <li>Maecenas sed diam eget risus varius blandit sit amet non magna.</li>
-                    </ol>
-                    <p>Cras mattis consectetur purus sit amet fermentum. Sed posuere consectetur est at lobortis.</p>
-                </div><!-- /.blog-post -->
-
-                <div class="blog-post">
-                    <h2 class="blog-post-title">Another blog post</h2>
-                    <p class="blog-post-meta">December 23, 2013 by <a href="#">Jacob</a></p>
-
-                    <p>Cum sociis natoque penatibus et magnis <a href="#">dis parturient montes</a>, nascetur ridiculus mus. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.</p>
-                    <blockquote>
-                        <p>Curabitur blandit tempus porttitor. <strong>Nullam quis risus eget urna mollis</strong> ornare vel eu leo. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                    </blockquote>
-                    <p>Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
-                    <p>Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-                </div><!-- /.blog-post -->
-
-                <div class="blog-post">
-                    <h2 class="blog-post-title">New feature</h2>
-                    <p class="blog-post-meta">December 14, 2013 by <a href="#">Chris</a></p>
-
-                    <p>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-                    <ul>
-                        <li>Praesent commodo cursus magna, vel scelerisque nisl consectetur et.</li>
-                        <li>Donec id elit non mi porta gravida at eget metus.</li>
-                        <li>Nulla vitae elit libero, a pharetra augue.</li>
-                    </ul>
-                    <p>Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
-                    <p>Donec ullamcorper nulla non metus auctor fringilla. Nulla vitae elit libero, a pharetra augue.</p>
-                </div><!-- /.blog-post -->
-
-                <nav class="blog-pagination">
-                    <a class="btn btn-outline-primary" href="#">Older</a>
-                    <a class="btn btn-outline-secondary disabled" href="#">Newer</a>
-                </nav>
-
+                <c:choose>
+                    <c:when test="${empty data.page.data}">
+                        <div class="blog-post">
+                            还没有人文章呢，快来写篇吧~
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="item" items="${data.page.data}">
+                            <div class="blog-post">
+                                <h2 class="blog-post-title"><a href="${ctx}/note/detail?id=${item.id}">${item.title}</a></h2>
+                                <p class="blog-post-meta"><a href="#">${item.authorInfo.nickname}</a> 发表于 <fmt:formatDate value="${item.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></p>
+                                <c:choose>
+                                    <c:when test="${fn:length(item.contentText) > 200}">
+                                        ${fn:substring(item.contentText, 0, 200)}......
+                                    </c:when>
+                                    <c:otherwise>
+                                        ${item.contentText}
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+                <c:set var="paginationUrl" value="${ctx}/note/notes"/>
+                <c:set var="paginationData" value="${data.page}"/>
+                <%@ include file="common/pagination.jsp" %>
             </div><!-- /.blog-main -->
 
             <aside class="col-md-4 blog-sidebar">
                 <div class="p-3 mb-3 bg-light rounded">
                     <h4 class="font-italic">About</h4>
-                    <p class="mb-0">Etiam porta <em>sem malesuada magna</em> mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.</p>
+                    <p class="mb-0">${data.dataType == 0 ? "这里展示了最新的文章" : "这里展示了".concat(data.betweenDate).concat("的所有文章")}.</p>
                 </div>
 
-                <div class="p-3">
-                    <h4 class="font-italic">Archives</h4>
-                    <ol class="list-unstyled mb-0">
-                        <li><a href="#">March 2014</a></li>
-                        <li><a href="#">February 2014</a></li>
-                        <li><a href="#">January 2014</a></li>
-                        <li><a href="#">December 2013</a></li>
-                        <li><a href="#">November 2013</a></li>
-                        <li><a href="#">October 2013</a></li>
-                        <li><a href="#">September 2013</a></li>
-                        <li><a href="#">August 2013</a></li>
-                        <li><a href="#">July 2013</a></li>
-                        <li><a href="#">June 2013</a></li>
-                        <li><a href="#">May 2013</a></li>
-                        <li><a href="#">April 2013</a></li>
-                    </ol>
-                </div>
+                <c:if test="${not empty data.archives}">
+                    <div class="p-3">
+                        <h4 class="font-italic">归档</h4>
+                        <ol class="list-unstyled mb-0">
+                            <c:forEach var="entry" items="${data.archives}">
+                                <li><a href="${ctx}/note/notes?betweenDate=${entry.key}">${entry.key}(${entry.value})</a></li>
+                            </c:forEach>
+                        </ol>
+                    </div>
+                </c:if>
 
-                <div class="p-3">
-                    <h4 class="font-italic">Elsewhere</h4>
-                    <ol class="list-unstyled">
-                        <li><a href="#">GitHub</a></li>
-                        <li><a href="#">Twitter</a></li>
-                        <li><a href="#">Facebook</a></li>
-                    </ol>
-                </div>
+                <%--<div class="p-3">--%>
+                    <%--<h4 class="font-italic">Elsewhere</h4>--%>
+                    <%--<ol class="list-unstyled">--%>
+                        <%--<li><a href="#">GitHub</a></li>--%>
+                        <%--<li><a href="#">Twitter</a></li>--%>
+                        <%--<li><a href="#">Facebook</a></li>--%>
+                    <%--</ol>--%>
+                <%--</div>--%>
             </aside><!-- /.blog-sidebar -->
-
         </div><!-- /.row -->
-
     </main><!-- /.container -->
+<%@ include file="common/footer.jsp" %>
 </body>
 <script src="${resPath}/js/jquery-3.4.0.min.js"></script>
 <script src="${resPath}/js/popper.min.js"></script>

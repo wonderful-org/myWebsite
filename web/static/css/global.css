@@ -1,6 +1,6 @@
-body{
-    background-color: #eceff1;
-}
+/*body{*/
+    /*background-color: #eceff1;*/
+/*}*/
 
 .img-responsive {
     display: block;
@@ -10,5 +10,25 @@ body{
 }
 
 .err-msg{
+    color: red;
+}
+
+/*
+ * Footer
+ */
+.blog-footer {
+    padding: 2.5rem 0;
+    color: #999;
+    text-align: center;
+    background-color: #eceff1;
+    border-top: .05rem solid #eceff1;
+    margin-top: 1rem;
+}
+.blog-footer p:last-child {
+    margin-bottom: 0;
+}
+
+.required-mark{
+    margin-left: 2px;
     color: red;
 }
