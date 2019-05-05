@@ -31,7 +31,7 @@
                 <c:choose>
                     <c:when test="${empty data.page.data}">
                         <div class="blog-post">
-                            还没有人文章呢，快来写篇吧~
+                            还没有人写文章呢，快来写篇吧~
                         </div>
                     </c:when>
                     <c:otherwise>
