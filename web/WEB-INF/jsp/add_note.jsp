@@ -28,7 +28,18 @@
             <textarea id="summernote" name="contentHtml"></textarea>
         </div>
         <!-- 文本编辑器结束 -->
-        <div class="form-group">
+        <div class="form-group col-md-6">
+            <label class="mr-sm-2" for="folder">专辑</label>
+            <select class="custom-select mr-sm-2" id="folder">
+                <option value="0">文章专辑...</option>
+                <c:if test="${not empty data}">
+                    <c:forEach items="${data}" var="item">
+                        <option value="${item.id}">${item.folderName}</option>
+                    </c:forEach>
+                </c:if>
+            </select>
+        </div>
+        <div class="form-group col-md-6">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="open" checked>
                 <label class="form-check-label" for="open">
@@ -51,7 +62,9 @@
 <script src="${resPath}/js/summernote-bs4.min.js"></script>
 <script src="${resPath}/js/summernote-zh-CN.min.js"></script>
 <script>
+    var uuid = uuid();
     var imgUrlArray = new Array();
+    var is_confirm = false;
     $(function () {
         $('#title').bind('input propertychange', function() {
             $('.err-msg').text('');
@@ -96,6 +109,7 @@
         var source = $('#source').val();
         var content = $('#summernote').summernote('code');
         var isOpen = $('#open').prop('checked') ? 0 : 1;
+        var folderId=$("#folder").val();
         if(isBlank(title)){
             $('.err-msg').text('标题不可为空');
         }else if(isBlank(content)){
@@ -107,7 +121,8 @@
                 content: content,
                 source: source,
                 open: isOpen,
-                imgUrls: imgUrlArray
+                imgUrls: imgUrlArray,
+                folderId: folderId
             };
             var toNotes = function () {
                 window.open(baseUrl + '/note/toNotes', '_self');
@@ -115,9 +130,22 @@
             var failCallback = function(res){
                 $('.err-msg').text(res.msg);
             };
+            is_confirm = true;
             ajaxPost(url, data, toNotes, failCallback);
         }
         return false;
+    }
+
+    window.onbeforeunload = function(){
+        if(!is_confirm){
+            if(imgUrlArray.length > 0){
+                var url = baseUrl + '/note/unload';
+                var data = {
+                    imgUrls: imgUrlArray
+                };
+                ajaxPost(url, data);
+            }
+        }
     }
 </script>
 </html>

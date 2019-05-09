@@ -16,6 +16,8 @@ public class SecurityUtils {
 
     public static final String USER_SESSION_ATTRIBUTE = "currentUser";
 
+    public static String USER_ADMIN_USERNAME;
+
     public static String produceSalt() {
         return UUID.randomUUID().toString().replace("-", "");
     }

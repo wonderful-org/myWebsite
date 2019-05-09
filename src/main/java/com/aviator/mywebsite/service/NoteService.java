@@ -8,10 +8,7 @@ import com.aviator.mywebsite.entity.dto.req.NoteReq;
 import com.aviator.mywebsite.entity.dto.resp.NoteResp;
 import com.aviator.mywebsite.entity.dto.resp.UserInfoResp;
 import com.aviator.mywebsite.entity.dto.resp.UserResp;
-import com.aviator.mywebsite.entity.po.Note;
-import com.aviator.mywebsite.entity.po.Page;
-import com.aviator.mywebsite.entity.po.User;
-import com.aviator.mywebsite.entity.po.UserInfo;
+import com.aviator.mywebsite.entity.po.*;
 import com.aviator.mywebsite.enums.ResultEnums;
 import com.aviator.mywebsite.exception.ServiceException;
 import com.aviator.mywebsite.runnable.NoteImgCleanRunnable;
@@ -53,23 +50,29 @@ public class NoteService extends BaseService {
         Date currentDate = new Date();
         note.setCreateTime(currentDate);
         note.setUpdateTime(currentDate);
-        List<String> imgUrls = Lists.newArrayList();
-        List<String> removeImgUrls = Lists.newArrayList();
-        for (String url : noteReq.getImgUrls()) {
-            if (!noteReq.getContent().contains(url)) {
-                removeImgUrls.add(url);
-            } else {
-                imgUrls.add(url);
+        if (CollectionUtils.isNotEmpty(noteReq.getImgUrls())) {
+            // 文章中存在的图片链接
+            List<String> imgUrls = Lists.newArrayList();
+            // 文章中不存在的图片链接(可能用户编辑时插入后删除了)
+            List<String> removeImgUrls = Lists.newArrayList();
+            for (String url : noteReq.getImgUrls()) {
+                if (!noteReq.getContent().contains(url)) {
+                    removeImgUrls.add(url);
+                } else {
+                    imgUrls.add(url);
+                }
+            }
+            note.setImgUrls(JSON.toJSONString(imgUrls));
+            if (CollectionUtils.isNotEmpty(removeImgUrls)) {
+                new Thread(new NoteImgCleanRunnable(request, removeImgUrls)).start();
             }
         }
-        note.setImgUrlsStr(JSON.toJSONString(imgUrls));
         long id = noteDao.insert(note, false);
-        new Thread(new NoteImgCleanRunnable(removeImgUrls, request)).start();
         return ResultUtils.buildResult(ResultEnums.SUCCESS, id);
     }
 
     public Result deleteNote(HttpServletRequest request, long id) {
-        Note dbNote = noteDao.getNoteById(id);
+        Note dbNote = noteDao.getById(id, Note.class);
         if (dbNote == null) {
             return ResultUtils.buildResult(ResultEnums.NOTE_NOT_EXIST);
         }
@@ -80,10 +83,10 @@ public class NoteService extends BaseService {
         if (currentUser.getId() != dbNote.getAuthorId()) {
             return ResultUtils.buildResult(ResultEnums.USER_HAS_NOT_PERMISSION);
         }
-        noteDao.deleteNoteById(id);
-        String imgUrlsStr = dbNote.getImgUrlsStr();
+        noteDao.deleteById(id);
+        String imgUrlsStr = dbNote.getImgUrls();
         if (StringUtils.isNotBlank(imgUrlsStr)) {
-            new Thread(new NoteImgCleanRunnable(JSON.parseArray(imgUrlsStr, String.class), request)).start();
+            new Thread(new NoteImgCleanRunnable(request, JSON.parseArray(imgUrlsStr, String.class))).start();
         }
         return ResultUtils.buildResult(ResultEnums.SUCCESS, id);
     }
@@ -93,7 +96,7 @@ public class NoteService extends BaseService {
         if (result != null) {
             return result;
         }
-        Note dbNote = noteDao.getNoteById(noteReq.getId());
+        Note dbNote = noteDao.getById(noteReq.getId(), Note.class);
         if (dbNote == null) {
             return ResultUtils.buildResult(ResultEnums.NOTE_NOT_EXIST);
         }
@@ -101,17 +104,19 @@ public class NoteService extends BaseService {
             return ResultUtils.buildResult(ResultEnums.USER_HAS_NOT_PERMISSION);
         }
         // 先删
-        noteDao.deleteNoteById(dbNote.getId());
-        String imgUrlsStr = dbNote.getImgUrlsStr();
-        if (StringUtils.isNotBlank(imgUrlsStr)) {
-            new Thread(new NoteImgCleanRunnable(JSON.parseArray(imgUrlsStr, String.class), request)).start();
+        noteDao.deleteById(dbNote.getId());
+        List<String> imgUrls = noteReq.getImgUrls() == null ? Lists.newArrayList() : noteReq.getImgUrls();
+        String dbImgUrlsStr = dbNote.getImgUrls();
+        if (StringUtils.isNotBlank(dbImgUrlsStr)) {
+            imgUrls.addAll(JSON.parseArray(dbImgUrlsStr, String.class));
+            noteReq.setImgUrls(imgUrls);
         }
         // 再增
         return insertNote(request, noteReq);
     }
 
     public Result getNoteById(long id) {
-        Note note = noteDao.getNoteById(id);
+        Note note = noteDao.getById(id, Note.class);
         if (note != null) {
             try {
                 NoteResp noteResp = new NoteResp();
@@ -166,6 +171,9 @@ public class NoteService extends BaseService {
                     BeanUtils.copyProperties(noteResp, note);
                     User user = userDao.getUserById(note.getAuthorId());
                     if (user != null) {
+                        UserResp userResp = new UserResp();
+                        BeanUtils.copyProperties(userResp, user);
+                        noteResp.setAuthor(userResp);
                         UserInfo userInfo = userInfoDao.getUserInfoByUserId(user.getId());
                         if (userInfo != null) {
                             UserInfoResp userInfoResp = new UserInfoResp();
@@ -190,6 +198,55 @@ public class NoteService extends BaseService {
             log.error("findNotePage error", e);
             throw new ServiceException("findNotePage error", e);
         }
+    }
+
+    public Result findNotesByFolderId(long folderId) {
+        Folder folder = folderDao.getById(folderId, Folder.class);
+        if (folder == null) {
+            return ResultUtils.buildResult(ResultEnums.FOLDER_NOT_EXIST);
+        }
+        List<Note> notes = noteDao.findNoteByFolderId(folderId);
+        List<NoteResp> noteResps = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(notes)) {
+            for (Note note : notes) {
+                NoteResp noteResp = convertToDTO(note, NoteResp.class);
+                String content = noteResp.getContent();
+                if (StringUtils.isNotBlank(content)) {
+                    String contentText = Jsoup.parse(content).text();
+                    if (StringUtils.isNotBlank(contentText)) {
+                        contentText = StringUtils.replace(contentText, " ", "");
+                    }
+                    noteResp.setContentText(contentText);
+                }
+                noteResps.add(noteResp);
+            }
+        }
+        return ResultUtils.buildResult(ResultEnums.SUCCESS, noteResps);
+    }
+
+    public Result findNotesByFolderId(Long folderId, long userId) {
+        User dbUser = userDao.getUserById(userId);
+        if (dbUser == null) {
+            return ResultUtils.buildResult(ResultEnums.USER_NOT_EXIST);
+        }
+        NoteCond cond = new NoteCond();
+        cond.setAuthorId(userId);
+        cond.setFolderId(folderId);
+        List<Note> notes = noteDao.findList(cond, Note.class);
+        List<NoteResp> noteResps = Lists.newArrayList();
+        for (Note note : notes) {
+            NoteResp noteResp = convertToDTO(note, NoteResp.class);
+            String content = noteResp.getContent();
+            if (StringUtils.isNotBlank(content)) {
+                String contentText = Jsoup.parse(content).text();
+                if (StringUtils.isNotBlank(contentText)) {
+                    contentText = StringUtils.replace(contentText, " ", "");
+                }
+                noteResp.setContentText(contentText);
+            }
+            noteResps.add(noteResp);
+        }
+        return ResultUtils.buildResult(ResultEnums.SUCCESS, noteResps);
     }
 
     public Result getArchives() {
@@ -244,8 +301,19 @@ public class NoteService extends BaseService {
         return ResultUtils.buildSuccessResult(resultMap);
     }
 
+    public Result unload(HttpServletRequest request, NoteReq noteReq) {
+        List<String> removeImgUrls = noteReq.getImgUrls();
+        if (CollectionUtils.isNotEmpty(removeImgUrls)) {
+            new Thread(new NoteImgCleanRunnable(request, removeImgUrls)).start();
+        }
+        return ResultUtils.buildSuccessResult();
+    }
+
     private Result checkNote(NoteReq noteReq, boolean isInsert) {
-        Result result;
+        Result result = checkParams(noteReq);
+        if (result != null) {
+            return result;
+        }
         if (isInsert) {
             result = checkParams(noteReq, noteReq.getTitle(), noteReq.getContent());
         } else {

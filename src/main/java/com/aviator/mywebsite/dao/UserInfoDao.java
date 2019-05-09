@@ -20,17 +20,13 @@ public class UserInfoDao extends BaseDao {
         return JdbcUtils.executeQueryForObject(sql.toString(), UserInfo.class, userId);
     }
 
-    public long insertUserInfo(UserInfo userInfo) {
-        return insert(userInfo);
-    }
-
     public int deleteUserByUserId(long userId) {
         StringBuilder sql = new StringBuilder("delete from ");
         sql.append(USER_INFO_TABLE_NAME).append(" where ").append(" userId = ? ");
         return JdbcUtils.executeUpdate(sql.toString(), userId);
     }
 
-    public int updateUserByUserId(long userId, UserInfo userInfo) {
+    public int updateUserInfoByUserId(long userId, UserInfo userInfo) {
         Map<String, Object> condMap = Maps.newHashMap();
         condMap.put("userId", userId);
         return update(userInfo, condMap);

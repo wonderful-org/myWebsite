@@ -38,7 +38,7 @@
                         <c:forEach var="item" items="${data.page.data}">
                             <div class="blog-post">
                                 <h2 class="blog-post-title"><a href="${ctx}/note/detail?id=${item.id}">${item.title}</a></h2>
-                                <p class="blog-post-meta"><a href="#">${item.authorInfo.nickname}</a> 发表于 <fmt:formatDate value="${item.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></p>
+                                <p class="blog-post-meta"><a href="#">${empty item.authorInfo.nickname ? item.author.username : item.authorInfo.nickname}</a> 发表于 <fmt:formatDate value="${item.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></p>
                                 <c:choose>
                                     <c:when test="${fn:length(item.contentText) > 200}">
                                         ${fn:substring(item.contentText, 0, 200)}......

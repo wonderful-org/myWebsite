@@ -32,13 +32,15 @@ public enum ResultEnums {
 
     MESSAGE_NOT_EXIST("40101", "留言不存在"),
 
-    UPLOAD_LIMIT_FILE_MAX_SIZE("40211", "上传文件超出最大值"),
+    UPLOAD_LIMIT_FILE_MAX_SIZE("40201", "上传文件超出最大值"),
 
-    UPLOAD_LIMIT_MULT_FILE_MAX_SIZE("40212", "上传文件总量超出最大值"),
+    UPLOAD_LIMIT_MULT_FILE_MAX_SIZE("40202", "上传文件总量超出最大值"),
 
-    UPLOAD_ERROR("40213", "上传文件总量超出最大值"),
+    UPLOAD_ERROR("40203", "上传文件错误"),
 
-    NOTE_NOT_EXIST("40301", "文章不存在");
+    NOTE_NOT_EXIST("40301", "文章不存在"),
+
+    FOLDER_NOT_EXIST("40401", "专辑不存在");
 
     private String code;
 

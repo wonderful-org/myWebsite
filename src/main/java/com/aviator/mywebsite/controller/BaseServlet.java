@@ -3,10 +3,7 @@ package com.aviator.mywebsite.controller;
 import com.alibaba.fastjson.JSON;
 import com.aviator.mywebsite.annotation.*;
 import com.aviator.mywebsite.exception.ControllerException;
-import com.aviator.mywebsite.service.MessageService;
-import com.aviator.mywebsite.service.NoteService;
-import com.aviator.mywebsite.service.UploadService;
-import com.aviator.mywebsite.service.UserService;
+import com.aviator.mywebsite.service.*;
 import com.aviator.mywebsite.util.CustomUtils;
 import com.aviator.mywebsite.util.ServletUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -53,6 +50,8 @@ public abstract class BaseServlet extends HttpServlet {
     protected UploadService uploadService = new UploadService();
 
     protected NoteService noteService = new NoteService();
+
+    protected FolderService folderService = new FolderService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

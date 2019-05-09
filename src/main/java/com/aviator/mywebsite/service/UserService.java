@@ -1,7 +1,9 @@
 package com.aviator.mywebsite.service;
 
 import com.aviator.mywebsite.entity.Result;
+import com.aviator.mywebsite.entity.dto.req.UserInfoReq;
 import com.aviator.mywebsite.entity.dto.req.UserReq;
+import com.aviator.mywebsite.entity.dto.resp.UserInfoResp;
 import com.aviator.mywebsite.entity.dto.resp.UserResp;
 import com.aviator.mywebsite.entity.po.User;
 import com.aviator.mywebsite.entity.po.UserInfo;
@@ -42,17 +44,16 @@ public class UserService extends BaseService {
         user.setUpdateTime(new Date());
         long userId = userDao.insertUser(user);
         UserInfo userInfo = user.getUserInfo();
-        if (userInfo == null) {
-            userInfo = new UserInfo();
+        if (userInfo != null) {
+            UserInfo dbUserInfo = userInfoDao.getUserInfoByUserId(userId);
+            if (dbUserInfo != null) {
+                userInfoDao.deleteUserByUserId(userId);
+            }
+            userInfo.setUserId(userId);
+            userInfo.setUsername(user.getUsername());
+            userInfo.setNickname(userInfo.getNickname());
+            userInfoDao.insert(userInfo);
         }
-        userInfo.setUserId(userId);
-        userInfo.setUsername(user.getUsername());
-        userInfo.setNickname(StringUtils.isBlank(userInfo.getNickname()) ? user.getUsername() : userInfo.getNickname());
-        UserInfo dbUserInfo = userInfoDao.getUserInfoByUserId(userId);
-        if (dbUserInfo != null) {
-            userInfoDao.deleteUserByUserId(userId);
-        }
-        userInfoDao.insertUserInfo(userInfo);
         UserResp userResp = new UserResp();
         userResp.setId(userId);
         userResp.setUsername(user.getUsername());
@@ -77,11 +78,49 @@ public class UserService extends BaseService {
         }
         dbUser.setPassword(null);
         UserResp userResp = convertToDTO(dbUser, UserResp.class);
+        UserInfo dbUserInfo = userInfoDao.getUserInfoByUserId(userResp.getId());
+        UserInfoResp userInfoResp = convertToDTO(dbUserInfo, UserInfoResp.class);
+        userResp.setUserInfo(userInfoResp);
         return ResultUtils.buildResult(ResultEnums.SUCCESS, userResp);
     }
 
+    public Result insertOrUpdateUserInfo(UserInfoReq userInfoReq) {
+        Long userId = userInfoReq.getUserId();
+        if (userId == null) {
+            return ResultUtils.buildResult(ResultEnums.USER_NOT_LOGIN);
+        }
+        User dbUser = userDao.getUserById(userId);
+        if (dbUser == null) {
+            return ResultUtils.buildResult(ResultEnums.USER_NOT_EXIST);
+        }
+        UserInfo dbUserInfo = userInfoDao.getUserInfoByUserId(userId);
+        UserInfo userInfo = convertFromDTO(userInfoReq, UserInfo.class);
+        long id;
+        Date currentDate = new Date();
+        if (dbUserInfo == null) {
+            userInfo.setCreateTime(currentDate);
+            userInfo.setUpdateTime(currentDate);
+            id = userInfoDao.insert(userInfo);
+        } else {
+            userInfo.setCreateTime(dbUserInfo.getCreateTime());
+            userInfo.setUpdateTime(currentDate);
+            id = userInfoDao.updateUserInfoByUserId(userId, userInfo);
+        }
+        return ResultUtils.buildResult(ResultEnums.SUCCESS, id);
+    }
+
+    public Result getUserInfoByUserId(long userId) {
+        User dbUser = userDao.getUserById(userId);
+        if (dbUser == null) {
+            return ResultUtils.buildResult(ResultEnums.USER_NOT_EXIST);
+        }
+        UserInfo dbUserInfo = userInfoDao.getUserInfoByUserId(userId);
+        UserInfoResp userInfoResp = convertToDTO(dbUserInfo, UserInfoResp.class);
+        return ResultUtils.buildResult(ResultEnums.SUCCESS, userInfoResp);
+    }
+
     private Result checkUser(UserReq userReq) {
-        Result result = checkParams(userReq, userReq.getUsername(), userReq.getPassword());
+        Result result = checkParams(userReq);
         if (result != null) {
             return result;
         }

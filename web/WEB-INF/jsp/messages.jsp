@@ -24,7 +24,7 @@
                 <c:forEach var="item" items="${data.data}">
                     <li class="list-group-item">
                         <div class="d-flex w-100 justify-content-between">
-                            <a href="javascript:;">${item.authorInfo.nickname}</a>
+                            <a href="javascript:;">${empty item.authorInfo.nickname ? item.author.username : item.authorInfo.nickname}</a>
                             <small><fmt:formatDate value="${item.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></small>
                         </div>
                         <p class="mb-1">${item.content}</p>

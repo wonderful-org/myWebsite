@@ -34,6 +34,8 @@ public abstract class BaseDao {
 
     protected static final String NOTE_TABLE_NAME = "mw_note";
 
+    protected static final String FOLDER_TABLE_NAME = "mw_folder";
+
     public <T> long insert(T obj) {
         return insert(obj, true);
     }
@@ -68,6 +70,30 @@ public abstract class BaseDao {
             paramLists.addAll(condLists);
         }
         return JdbcUtils.executeUpdate(sql, paramLists);
+    }
+
+    public <T> T getById(long id, Class<T> requiredType) {
+        StringBuilder sql = new StringBuilder("select * from ");
+        sql.append(getTableName()).append(" where ").append(" id = ? ");
+        return JdbcUtils.executeQueryForObject(sql.toString(), requiredType, id);
+    }
+
+    public int deleteById(long id) {
+        StringBuilder sql = new StringBuilder("delete from ");
+        sql.append(getTableName()).append(" where ").append(" id = ? ");
+        return JdbcUtils.executeUpdate(sql.toString(), id);
+    }
+
+    public int deleteByIds(List<Long> ids) {
+        StringBuilder sql = new StringBuilder("delete from ");
+        sql.append(getTableName()).append(" where ").append(" id in (?");
+        List<Object> params = Lists.newArrayList();
+        for (Long id : ids) {
+            sql.append(",?");
+            params.add(id);
+        }
+        String sqlStr = StringUtils.substringBeforeLast(sql.toString(), ",?") + ")";
+        return JdbcUtils.executeUpdate(sqlStr, params);
     }
 
     public <T> Page findPage(BaseCond cond, Class<T> resultType) {
@@ -123,6 +149,20 @@ public abstract class BaseDao {
             return JdbcUtils.executeQueryForObject(sql.toString(), long.class);
         }
         return JdbcUtils.executeQueryForObject(sql.toString(), list, long.class);
+    }
+
+    public <T> List<T> findList(BaseCond cond, Class<T> requiredType) {
+        StringBuilder sql = new StringBuilder("select * from ");
+        sql.append(getTableName());
+        List list = Lists.newArrayList();
+        String whereSql = cond != null ? getWhereSql(cond, list) : "";
+        if (StringUtils.isNotBlank(whereSql)) {
+            sql.append(whereSql);
+        }
+        if (CollectionUtils.isEmpty(list)) {
+            return JdbcUtils.executeQueryForList(sql.toString(), requiredType);
+        }
+        return JdbcUtils.executeQueryForList(sql.toString(), list, requiredType);
     }
 
     protected abstract String getTableName();
@@ -214,6 +254,9 @@ public abstract class BaseDao {
                 try {
                     String fieldName = field.getName();
                     Object fieldValue = PropertyUtils.getProperty(cond, fieldName);
+                    if (fieldValue == null) {
+                        continue;
+                    }
                     if (field.getType() == List.class) {
                         List list = (List) fieldValue;
                         if (CollectionUtils.isNotEmpty(list) && list.size() > 1) {

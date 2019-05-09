@@ -1,4 +1,4 @@
-var baseUrl = getRealPath();
+var baseUrl = ctx;
 var defaultProfilePic = baseUrl + '/img/defaultProfilePic.jpg';
 var defaultPageNum = 1;
 var defaultPageSize = 10;
@@ -8,15 +8,6 @@ var usernameMinLength = 5;
 var usernameMaxLength = 20;
 var passwordMinLength = 6;
 var passwordMaxLength = 30;
-
-
-function getRealPath() {
-    var localObj = window.location;
-    var contextPath = localObj.pathname.split("/")[1];
-    var basePath = localObj.protocol + "//" + localObj.host + "/" +
-        contextPath;
-    return basePath;
-}
 
 function outLogin() {
     $.ajax({
@@ -85,6 +76,15 @@ Date.prototype.toLocaleString = function () {
 // 时间补0
 function p(s) {
     return s < 10 ? '0' + s : s;
+}
+
+//用于生成uuid
+function S4() {
+    return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+}
+
+function uuid() {
+    return (S4()+S4()+S4()+S4()+S4()+S4()+S4()+S4());
 }
 
 

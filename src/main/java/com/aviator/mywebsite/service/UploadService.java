@@ -41,12 +41,14 @@ public class UploadService {
 
     private static final String UPLOAD_TEMP_PATH = "/fileupload/temp";
 
+    private static String savePath;
+
     public Result upload(String uploadType, HttpServletRequest request) {
-        return upload(uploadType, true, true, request);
+        return upload(uploadType, false, true, request);
     }
 
     public Result upload(String uploadType, boolean remakeFilePath, boolean remakeFileName, HttpServletRequest request) {
-        String savePath = request.getServletContext().getRealPath(UPLOAD_PATH);
+        savePath = request.getServletContext().getRealPath(UPLOAD_PATH);
         String tempPath = request.getServletContext().getRealPath(UPLOAD_TEMP_PATH);
         File tempFile = new File(tempPath);
         if (!tempFile.exists()) {
@@ -114,9 +116,15 @@ public class UploadService {
                                 saveFilename = makeFileName(filename);
                             }
                             //得到文件的保存目录
-                            String realSavePath = savePath;
+                            String realSavePath = savePath + File.separator + uploadType;
                             if (remakeFilePath) {
                                 realSavePath = makePath(saveFilename, savePath, uploadType);
+                            }
+                            //如果目录不存在
+                            File realSavePathFile = new File(realSavePath);
+                            if (!realSavePathFile.exists()) {
+                                //创建目录
+                                realSavePathFile.mkdirs();
                             }
                             filePath = realSavePath + File.separator + saveFilename;
                             //创建一个文件输出流
@@ -150,6 +158,10 @@ public class UploadService {
             return ResultUtils.buildResult(ResultEnums.UPLOAD_ERROR);
         }
         return ResultUtils.buildSuccessResult(StringUtils.isBlank(filePath) ? null : filePath.substring(filePath.indexOf(UPLOAD_PATH.replace("/", File.separator))).replace(File.separator, "/"));
+    }
+
+    public static String getUploadPath(String uploadType) {
+        return savePath + File.separator + uploadType;
     }
 
     /**

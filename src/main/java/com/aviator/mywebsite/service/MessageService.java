@@ -6,6 +6,7 @@ import com.aviator.mywebsite.entity.dto.req.MessageReq;
 import com.aviator.mywebsite.entity.dto.req.PageReq;
 import com.aviator.mywebsite.entity.dto.resp.MessageResp;
 import com.aviator.mywebsite.entity.dto.resp.UserInfoResp;
+import com.aviator.mywebsite.entity.dto.resp.UserResp;
 import com.aviator.mywebsite.entity.po.Message;
 import com.aviator.mywebsite.entity.po.Page;
 import com.aviator.mywebsite.entity.po.User;
@@ -101,6 +102,9 @@ public class MessageService extends BaseService {
                     BeanUtils.copyProperties(messageResp, message);
                     User user = userDao.getUserById(message.getAuthorId());
                     if (user != null) {
+                        UserResp userResp = new UserResp();
+                        BeanUtils.copyProperties(userResp, user);
+                        messageResp.setAuthor(userResp);
                         UserInfo userInfo = userInfoDao.getUserInfoByUserId(user.getId());
                         if (userInfo != null) {
                             UserInfoResp userInfoResp = new UserInfoResp();
@@ -120,11 +124,14 @@ public class MessageService extends BaseService {
     }
 
     private Result checkMessage(MessageReq messageReq, boolean isInsert) {
-        Result result;
+        Result result = checkParams(messageReq);
+        if (result != null) {
+            return result;
+        }
         if (isInsert) {
-            result = checkParams(messageReq, messageReq.getContent());
+            result = checkParams(messageReq.getContent());
         } else {
-            result = checkParams(messageReq, messageReq.getId(), messageReq.getContent());
+            result = checkParams(messageReq.getId(), messageReq.getContent());
         }
         if (result != null) {
             return result;

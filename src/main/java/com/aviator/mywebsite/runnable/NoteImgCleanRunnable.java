@@ -1,6 +1,7 @@
 package com.aviator.mywebsite.runnable;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -14,25 +15,28 @@ import java.util.List;
  */
 public class NoteImgCleanRunnable implements Runnable {
 
-    private List<String> removeImgUrls;
-
     private HttpServletRequest request;
 
-    public NoteImgCleanRunnable(List<String> removeImgUrls, HttpServletRequest request) {
-        this.removeImgUrls = removeImgUrls;
+    private List<String> removeImgUrls;
+
+    public NoteImgCleanRunnable(HttpServletRequest request, List<String> removeImgUrls) {
         this.request = request;
+        this.removeImgUrls = removeImgUrls;
     }
 
     @Override
     public void run() {
         if (CollectionUtils.isNotEmpty(removeImgUrls)) {
-            for (String removeImgUrl : removeImgUrls) {
-                String realPath = request.getServletContext().getRealPath(removeImgUrl);
-                File file = new File(realPath);
-                if (file.exists()) {
-                    file.delete();
+            for (String removeImgFilePath : removeImgUrls) {
+                if (StringUtils.isNotBlank(removeImgFilePath)) {
+                    String realPath = request.getServletContext().getRealPath(removeImgFilePath);
+                    File file = new File(realPath);
+                    if (file.exists()) {
+                        file.delete();
+                    }
                 }
             }
         }
     }
+
 }

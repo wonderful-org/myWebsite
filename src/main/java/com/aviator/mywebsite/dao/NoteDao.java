@@ -3,6 +3,8 @@ package com.aviator.mywebsite.dao;
 import com.aviator.mywebsite.db.JdbcUtils;
 import com.aviator.mywebsite.entity.po.Note;
 
+import java.util.List;
+
 /**
  * @Description TODO
  * @ClassName NoteDao
@@ -11,16 +13,10 @@ import com.aviator.mywebsite.entity.po.Note;
  */
 public class NoteDao extends BaseDao {
 
-    public Note getNoteById(long id) {
+    public List<Note> findNoteByFolderId(long folderId) {
         StringBuilder sql = new StringBuilder("select * from ");
-        sql.append(NOTE_TABLE_NAME).append(" where ").append(" id = ? ");
-        return JdbcUtils.executeQueryForObject(sql.toString(), Note.class, id);
-    }
-
-    public int deleteNoteById(long id) {
-        StringBuilder sql = new StringBuilder("delete from ");
-        sql.append(NOTE_TABLE_NAME).append(" where ").append(" id = ? ");
-        return JdbcUtils.executeUpdate(sql.toString(), id);
+        sql.append(NOTE_TABLE_NAME).append(" where ").append(" folderId = ?");
+        return JdbcUtils.executeQueryForList(sql.toString(), Note.class, folderId);
     }
 
     @Override

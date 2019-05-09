@@ -8,6 +8,8 @@ public class UserResp extends BaseEntity {
 
     private String username;
 
+    private UserInfoResp userInfo;
+
     public long getId() {
         return id;
     }
@@ -22,5 +24,13 @@ public class UserResp extends BaseEntity {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public UserInfoResp getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(UserInfoResp userInfo) {
+        this.userInfo = userInfo;
     }
 }

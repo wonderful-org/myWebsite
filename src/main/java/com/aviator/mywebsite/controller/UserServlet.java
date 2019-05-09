@@ -6,7 +6,6 @@ import com.aviator.mywebsite.annotation.RequestParam;
 import com.aviator.mywebsite.entity.Result;
 import com.aviator.mywebsite.entity.dto.req.UserReq;
 import com.aviator.mywebsite.entity.dto.resp.UserResp;
-import com.aviator.mywebsite.enums.ResultEnums;
 import com.aviator.mywebsite.util.ResultUtils;
 import com.aviator.mywebsite.util.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -65,14 +64,6 @@ public class UserServlet extends BaseServlet {
         req.getSession().removeAttribute(SecurityUtils.USER_SESSION_ATTRIBUTE);
         curUrl = getCurUri(req, curUrl);
         return StringUtils.isBlank(curUrl) ? "index" : "r:/" + curUrl;
-    }
-
-    @GetMapping("/personCenter")
-    public String personCenter(HttpServletRequest req) {
-        if (!SecurityUtils.isLogin(req)) {
-            ResultUtils.buildFail(req, ResultEnums.USER_NOT_LOGIN);
-        }
-        return "person_center";
     }
 
     private String getCurUri(HttpServletRequest req, String curUrl) {

@@ -14,7 +14,7 @@
 <div class="container">
     <div class="blog-post">
         <h2 class="blog-post-title">${data.title}</h2>
-        <p class="blog-post-meta"><a href="#">${data.authorInfo.nickname}</a> 发表于 <fmt:formatDate value="${data.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></p>
+        <p class="blog-post-meta"><a href="#">${empty data.authorInfo.nickname ? data.author.username : data.authorInfo.nickname}</a> 发表于 <fmt:formatDate value="${data.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/></p>
         ${data.content}
         <c:if test="${not empty currentUser && currentUser.id == data.author.id}">
             <a href="${ctx}/note/delete?id=${data.id}" onclick="return confirm('确定删除该文章吗？')">删除</a>

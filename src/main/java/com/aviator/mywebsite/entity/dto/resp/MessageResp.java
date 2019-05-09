@@ -16,6 +16,8 @@ public class MessageResp extends BaseEntity {
 
     private String content;
 
+    private UserResp author;
+
     private UserInfoResp authorInfo;
 
     private Date createTime;
@@ -36,6 +38,14 @@ public class MessageResp extends BaseEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public UserResp getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(UserResp author) {
+        this.author = author;
     }
 
     public UserInfoResp getAuthorInfo() {

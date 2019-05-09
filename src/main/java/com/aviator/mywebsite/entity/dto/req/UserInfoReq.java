@@ -1,21 +1,16 @@
-package com.aviator.mywebsite.entity.dto.resp;
+package com.aviator.mywebsite.entity.dto.req;
 
 import com.aviator.mywebsite.entity.BaseEntity;
 
-import java.util.Date;
-
 /**
  * @Description TODO
- * @ClassName UserInfoResp
+ * @ClassName UserInfoReq
  * @Author aviator_ls
- * @Date 2019/4/29 13:44
+ * @Date 2019/5/9 17:32
  */
-public class UserInfoResp extends BaseEntity {
-    private long id;
+public class UserInfoReq extends BaseEntity {
 
-    private long userId;
-
-    private String username;
+    private Long userId;
 
     private String realName;
 
@@ -35,37 +30,12 @@ public class UserInfoResp extends BaseEntity {
 
     private String introduction;
 
-    /**
-     * 头像
-     */
-    private String profile;
-
-    private Date createTime;
-
-    private Date updateTime;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getRealName() {
@@ -138,29 +108,5 @@ public class UserInfoResp extends BaseEntity {
 
     public void setIntroduction(String introduction) {
         this.introduction = introduction;
-    }
-
-    public String getProfile() {
-        return profile;
-    }
-
-    public void setProfile(String profile) {
-        this.profile = profile;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
     }
 }

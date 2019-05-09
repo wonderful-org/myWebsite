@@ -29,7 +29,7 @@ public class Note extends BaseEntity {
      */
     private int open;
 
-    private String imgUrlsStr;
+    private String imgUrls;
 
     private Date createTime;
 
@@ -99,12 +99,12 @@ public class Note extends BaseEntity {
         this.updateTime = updateTime;
     }
 
-    public String getImgUrlsStr() {
-        return imgUrlsStr;
+    public String getImgUrls() {
+        return imgUrls;
     }
 
-    public void setImgUrlsStr(String imgUrlsStr) {
-        this.imgUrlsStr = imgUrlsStr;
+    public void setImgUrls(String imgUrls) {
+        this.imgUrls = imgUrls;
     }
 
     public int getOpen() {

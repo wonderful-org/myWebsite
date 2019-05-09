@@ -8,6 +8,7 @@ import com.aviator.mywebsite.entity.Result;
 import com.aviator.mywebsite.entity.dto.req.NotePageReq;
 import com.aviator.mywebsite.entity.dto.req.NoteReq;
 import com.aviator.mywebsite.entity.dto.resp.NoteResp;
+import com.aviator.mywebsite.entity.dto.resp.UserResp;
 import com.aviator.mywebsite.enums.ResultEnums;
 import com.aviator.mywebsite.util.ResultUtils;
 import com.aviator.mywebsite.util.SecurityUtils;
@@ -50,7 +51,18 @@ public class NoteServlet extends BaseServlet {
     }
 
     @GetMapping("/toAdd")
-    public String toAdd() {
+    public String toAdd(HttpServletRequest request) {
+        if (!SecurityUtils.isLogin(request)) {
+            ResultUtils.buildFail(request, ResultEnums.USER_NOT_LOGIN);
+            return "r:/user/toLogin";
+        }
+        UserResp userResp = SecurityUtils.getCurrentUser(request);
+        Result folderResult = folderService.findFoldersByUserId(userResp.getId());
+        if (folderResult.isSuccess()) {
+            ResultUtils.buildSuccess(request, folderResult);
+        } else {
+            ResultUtils.buildFail(request, folderResult);
+        }
         return "add_note";
     }
 
@@ -92,16 +104,21 @@ public class NoteServlet extends BaseServlet {
             ResultUtils.buildFail(request, ResultEnums.USER_NOT_LOGIN);
             return "f:detail";
         }
-        Result result = noteService.getNoteById(id);
-        NoteResp noteResp = (NoteResp) result.getData();
-        if (SecurityUtils.getCurrentUser(request).getId() != noteResp.getAuthor().getId()) {
+        Result noteResult = noteService.getNoteById(id);
+        NoteResp noteResp = (NoteResp) noteResult.getData();
+        UserResp userResp = SecurityUtils.getCurrentUser(request);
+        if (userResp.getId() != noteResp.getAuthor().getId()) {
             ResultUtils.buildFail(request, ResultEnums.USER_HAS_NOT_PERMISSION);
             return "f:detail";
         }
-        if (result.isSuccess()) {
+        Result folderResult = folderService.findFoldersByUserId(userResp.getId());
+        if (noteResult.isSuccess()) {
+            Map<String, Object> result = Maps.newHashMap();
+            result.put("note", noteResult.getData());
+            result.put("folders", folderResult.getData());
             ResultUtils.buildSuccess(request, result);
         } else {
-            ResultUtils.buildFail(request, result);
+            ResultUtils.buildFail(request, noteResult);
             return "f:detail";
         }
         return "update_note";
@@ -112,6 +129,15 @@ public class NoteServlet extends BaseServlet {
         if (SecurityUtils.isLogin(request)) {
             noteReq.setAuthorId(SecurityUtils.getCurrentUser(request).getId());
             return noteService.updateNote(request, noteReq);
+        }
+        return ResultUtils.buildResult(ResultEnums.USER_NOT_LOGIN);
+    }
+
+    @PostMapping("unload")
+    public Result unload(HttpServletRequest request, @RequestBody NoteReq noteReq) {
+        if (SecurityUtils.isLogin(request)) {
+            noteReq.setAuthorId(SecurityUtils.getCurrentUser(request).getId());
+            return noteService.unload(request, noteReq);
         }
         return ResultUtils.buildResult(ResultEnums.USER_NOT_LOGIN);
     }

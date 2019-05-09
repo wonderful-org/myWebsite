@@ -16,21 +16,32 @@
     <form action="" method="post">
         <div class="form-group">
             <label for="title">文章标题<span class="required-mark">*</span></label>
-            <input type="text" class="form-control" id="title" placeholder="想一个响亮的标题吧~" value="${data.title}">
+            <input type="text" class="form-control" id="title" placeholder="想一个响亮的标题吧~" value="${data.note.title}">
         </div>
         <div class="form-group">
             <label for="source">文章来源</label>
-            <input id="source" type="text" class="form-control" placeholder="非原创文章因标明来源哦~" value="${data.source}">
+            <input id="source" type="text" class="form-control" placeholder="非原创文章因标明来源哦~" value="${data.note.source}">
         </div>
         <!-- 文本编辑器 -->
         <div id="content" class="form-group">
             <label for="summernote">文章内容<span class="required-mark">*</span></label>
-            <textarea id="summernote" name="contentHtml">${data.content}</textarea>
+            <textarea id="summernote" name="contentHtml">${data.note.content}</textarea>
         </div>
         <!-- 文本编辑器结束 -->
-        <div class="form-group">
+        <div class="form-group col-md-6">
+            <label class="mr-sm-2" for="folder">专辑</label>
+            <select class="custom-select mr-sm-2" id="folder">
+                <option value="0">文章专辑...</option>
+                <c:if test="${not empty data.folders}">
+                    <c:forEach items="${data.folders}" var="item">
+                        <option value="${item.id}" ${item.id == data.note.folderId ? selected : ""}>${item.folderName}</option>
+                    </c:forEach>
+                </c:if>
+            </select>
+        </div>
+        <div class="form-group col-md-6">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="open" <c:if test="${data.open == 0}">checked</c:if>>
+                <input class="form-check-input" type="checkbox" id="open" checked>
                 <label class="form-check-label" for="open">
                     公开文章
                 </label>
@@ -52,6 +63,7 @@
 <script src="${resPath}/js/summernote-zh-CN.min.js"></script>
 <script>
     var imgUrlArray = new Array();
+    var uuid = uuid();
     $(function () {
         $('#title').bind('input propertychange', function() {
             $('.err-msg').text('');
@@ -96,6 +108,7 @@
         var source = $('#source').val();
         var content = $('#summernote').summernote('code');
         var isOpen = $('#open').prop('checked') ? 0 : 1;
+        var folderId=$("#folder").val();
         if(isBlank(title)){
             $('.err-msg').text('标题不可为空');
         }else if(isBlank(content)){
@@ -103,12 +116,13 @@
         }else {
             var url = baseUrl + '/note/update';
             var data = {
-                id: ${data.id},
+                id: ${data.note.id},
                 title: title,
                 content: content,
                 source: source,
                 open: isOpen,
-                imgUrls: imgUrlArray
+                imgUrls: imgUrlArray,
+                folderId: folderId
             };
             var toNotes = function (res) {
                 window.open(baseUrl + '/note/detail?id=' + res, '_self');

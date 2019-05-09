@@ -23,12 +23,13 @@ DROP TABLE IF EXISTS `mw_folder`;
 CREATE TABLE `mw_folder` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `authorId` bigint(20) NOT NULL,
+  `parentFolderId` bigint(20) DEFAULT NULL,
   `folderName` varchar(30) DEFAULT NULL,
   `description` varchar(200) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='文件夹/专栏表';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='文件夹/专栏表';
 
 /*Table structure for table `mw_message` */
 
@@ -41,7 +42,7 @@ CREATE TABLE `mw_message` (
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `mw_note` */
 
@@ -55,11 +56,11 @@ CREATE TABLE `mw_note` (
   `source` varchar(255) DEFAULT NULL COMMENT '来源',
   `content` text NOT NULL,
   `open` tinyint(4) NOT NULL COMMENT '是否公开',
-  `imgUrlsStr` text,
+  `imgUrls` text,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8 COMMENT='笔记/文章表';
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8 COMMENT='笔记/文章表';
 
 /*Table structure for table `mw_user` */
 
@@ -74,7 +75,7 @@ CREATE TABLE `mw_user` (
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COMMENT='用户表';
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='用户表';
 
 /*Table structure for table `mw_user_info` */
 
@@ -84,16 +85,21 @@ CREATE TABLE `mw_user_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `userId` bigint(20) NOT NULL,
   `username` varchar(20) DEFAULT NULL,
+  `realName` varchar(20) DEFAULT NULL,
   `nickname` varchar(50) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
   `gender` tinyint(4) DEFAULT NULL,
+  `birthday` varchar(50) DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
   `profile` varchar(200) DEFAULT NULL,
+  `address` varchar(200) DEFAULT NULL,
+  `personWebsite` varchar(200) DEFAULT NULL,
   `introduction` varchar(500) DEFAULT NULL,
   `createTime` datetime DEFAULT NULL,
   `updateTime` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='用户信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='用户信息表';
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

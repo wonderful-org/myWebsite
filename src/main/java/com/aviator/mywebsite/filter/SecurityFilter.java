@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * @Description TODO
+ * @Description 安全过滤器，对账号权限进行过滤
  * @ClassName SecurityFilter
  * @Author aviator_ls
  * @Date 2019/4/25 11:54

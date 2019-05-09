@@ -15,8 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 @WebServlet("/upload/*")
 public class UploadServlet extends BaseServlet {
 
+    public static final String NOTE_IMG = "noteImg";
+
     @PostMapping("/note/img")
-    public Result noteImg(HttpServletRequest request) {
-        return uploadService.upload("noteImg", request);
+    public Result noteImgTemp(HttpServletRequest request) {
+        return uploadService.upload(NOTE_IMG, request);
     }
+
 }

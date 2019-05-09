@@ -18,30 +18,28 @@ public class UserInfo extends BaseEntity {
 
     private String username;
 
-    /**
-     * 昵称
-     */
+    private String realName;
+
     private String nickname;
 
-    /**
-     * 电子邮箱
-     */
+    private int gender;
+
+    private String birthday;
+
+    private String phone;
+
+    private String personWebsite;
+
     private String email;
 
-    /**
-     * 性别，0：未知 1：男 2：女
-     */
-    private int gender;
+    private String address;
+
+    private String introduction;
 
     /**
      * 头像
      */
     private String profile;
-
-    /**
-     * 用户简介
-     */
-    private String introduction;
 
     private Date createTime;
 
@@ -71,20 +69,20 @@ public class UserInfo extends BaseEntity {
         this.username = username;
     }
 
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
     public String getNickname() {
         return nickname;
     }
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public int getGender() {
@@ -95,12 +93,44 @@ public class UserInfo extends BaseEntity {
         this.gender = gender;
     }
 
-    public String getProfile() {
-        return profile;
+    public String getBirthday() {
+        return birthday;
     }
 
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getPersonWebsite() {
+        return personWebsite;
+    }
+
+    public void setPersonWebsite(String personWebsite) {
+        this.personWebsite = personWebsite;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getIntroduction() {
@@ -109,6 +139,14 @@ public class UserInfo extends BaseEntity {
 
     public void setIntroduction(String introduction) {
         this.introduction = introduction;
+    }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
     }
 
     public Date getCreateTime() {
@@ -132,11 +170,16 @@ public class UserInfo extends BaseEntity {
         return "UserInfo{" +
                 "id=" + id +
                 ", userId=" + userId +
+                ", username='" + username + '\'' +
                 ", nickname='" + nickname + '\'' +
-                ", email='" + email + '\'' +
                 ", gender=" + gender +
-                ", profile='" + profile + '\'' +
+                ", birthday='" + birthday + '\'' +
+                ", phone='" + phone + '\'' +
+                ", personWebsite='" + personWebsite + '\'' +
+                ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
                 ", introduction='" + introduction + '\'' +
+                ", profile='" + profile + '\'' +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 '}';

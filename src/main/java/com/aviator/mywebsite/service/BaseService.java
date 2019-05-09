@@ -1,9 +1,6 @@
 package com.aviator.mywebsite.service;
 
-import com.aviator.mywebsite.dao.MessageDao;
-import com.aviator.mywebsite.dao.NoteDao;
-import com.aviator.mywebsite.dao.UserDao;
-import com.aviator.mywebsite.dao.UserInfoDao;
+import com.aviator.mywebsite.dao.*;
 import com.aviator.mywebsite.entity.Result;
 import com.aviator.mywebsite.enums.ResultEnums;
 import com.aviator.mywebsite.exception.ControllerException;
@@ -29,6 +26,8 @@ public abstract class BaseService {
 
     protected NoteDao noteDao = new NoteDao();
 
+    protected FolderDao folderDao = new FolderDao();
+
     protected Result checkParams(Object... params) {
         if (ArrayUtils.isEmpty(params)) {
             return ResultUtils.buildResult(ResultEnums.NULL_ARGUMENT);
@@ -47,13 +46,16 @@ public abstract class BaseService {
     }
 
     protected <T> T convertFromDTO(Object originDTO, Class<T> deskClass) {
+        if (originDTO == null) {
+            return null;
+        }
         try {
             T deskInstance = deskClass.newInstance();
             Field[] fields = originDTO.getClass().getDeclaredFields();
             for (Field field : fields) {
                 if (field.getType() == String.class) {
                     String fieldValue = (String) PropertyUtils.getProperty(originDTO, field.getName());
-                    PropertyUtils.setProperty(deskInstance, field.getName(), StringUtils.isBlank(fieldValue) ? null : StringUtils.trimToNull(fieldValue));
+                    PropertyUtils.setProperty(originDTO, field.getName(), StringUtils.isBlank(fieldValue) ? null : StringUtils.trimToNull(fieldValue));
                 }
             }
             BeanUtils.copyProperties(deskInstance, originDTO);
@@ -65,6 +67,9 @@ public abstract class BaseService {
     }
 
     protected <T> T convertToDTO(Object origin, Class<T> deskDTOClass) {
+        if (origin == null) {
+            return null;
+        }
         try {
             T deskDTO = deskDTOClass.newInstance();
             BeanUtils.copyProperties(deskDTO, origin);

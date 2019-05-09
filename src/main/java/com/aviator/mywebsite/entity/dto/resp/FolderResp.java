@@ -1,4 +1,4 @@
-package com.aviator.mywebsite.entity.po;
+package com.aviator.mywebsite.entity.dto.resp;
 
 import com.aviator.mywebsite.entity.BaseEntity;
 
@@ -6,11 +6,11 @@ import java.util.Date;
 
 /**
  * @Description TODO
- * @ClassName Folder
+ * @ClassName FolderResp
  * @Author aviator_ls
- * @Date 2019/4/27 21:53
+ * @Date 2019/5/9 20:02
  */
-public class Folder extends BaseEntity {
+public class FolderResp extends BaseEntity {
 
     private long id;
 

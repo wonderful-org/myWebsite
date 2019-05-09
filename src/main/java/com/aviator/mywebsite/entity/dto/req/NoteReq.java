@@ -29,6 +29,8 @@ public class NoteReq {
 
     private List<String> imgUrls;
 
+    private String folderName;
+
     public long getId() {
         return id;
     }
@@ -77,6 +79,14 @@ public class NoteReq {
         this.folderId = folderId;
     }
 
+    public String getFolderName() {
+        return folderName;
+    }
+
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
+    }
+
     public int getOpen() {
         return open;
     }
@@ -84,6 +94,7 @@ public class NoteReq {
     public void setOpen(int open) {
         this.open = open;
     }
+
 
     public List<String> getImgUrls() {
         return imgUrls;

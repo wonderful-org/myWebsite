@@ -13,6 +13,10 @@ public class NoteCond extends BaseCond {
 
     private List createTime;
 
+    private Long authorId;
+
+    private Long folderId;
+
     public int getOpen() {
         return open;
     }
@@ -27,5 +31,21 @@ public class NoteCond extends BaseCond {
 
     public void setCreateTime(List createTime) {
         this.createTime = createTime;
+    }
+
+    public Long getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(Long authorId) {
+        this.authorId = authorId;
+    }
+
+    public Long getFolderId() {
+        return folderId;
+    }
+
+    public void setFolderId(Long folderId) {
+        this.folderId = folderId;
     }
 }

@@ -6,13 +6,10 @@
 
     <!-- servlet start -->
     <servlet>
-        <servlet-name>resumeServlet</servlet-name>
-        <servlet-class>com.aviator.mywebsite.controller.ResumeServlet</servlet-class>
+        <servlet-name>loadOnStartupServlet</servlet-name>
+        <servlet-class>com.aviator.mywebsite.controller.LoadOnStartupServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
     </servlet>
-    <servlet-mapping>
-        <servlet-name>resumeServlet</servlet-name>
-        <url-pattern>/resume</url-pattern>
-    </servlet-mapping>
     <!-- servlet end -->
 
     <!-- filter start -->

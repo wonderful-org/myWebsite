@@ -1,5 +1,7 @@
 package com.aviator.mywebsite.entity.dto.resp;
 
+import com.aviator.mywebsite.entity.BaseEntity;
+
 import java.util.Date;
 
 /**
@@ -8,7 +10,7 @@ import java.util.Date;
  * @Author aviator_ls
  * @Date 2019/5/3 17:56
  */
-public class NoteResp {
+public class NoteResp extends BaseEntity {
 
     private long id;
 
