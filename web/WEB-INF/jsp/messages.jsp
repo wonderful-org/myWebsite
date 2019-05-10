@@ -48,7 +48,7 @@
             <div class="form-group">
                 <textarea name="content" class="form-control" placeholder="说点什么吧..."></textarea>
             </div>
-            <button type="submit" class="btn btn-primary" style="float: right" onclick="return verify()">留言</button>
+            <button type="submit" class="btn btn-primary" onclick="return verify()">留言</button>
         </form>
     </div>
     <p class="err-msg">${errMsg}</p>
